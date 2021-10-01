@@ -38,6 +38,8 @@ int main(int argc, char *argv[])
         }
     }
 
+    QApplication::setWindowIcon(QIcon(":/images/icon.svg"));
+
     MainWindow w;
     w.setIsAdvancedMode(isAdvancedMode);
     w.show();

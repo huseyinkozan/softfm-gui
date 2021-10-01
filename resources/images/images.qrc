@@ -1,0 +1,25 @@
+<RCC>
+    <qresource prefix="/images">
+        <file>actions-cancel.svg</file>
+        <file>actions-cancel-scan.svg</file>
+        <file>actions-scan.svg</file>
+        <file>add.svg</file>
+        <file>close.svg</file>
+        <file>console.svg</file>
+        <file>display.svg</file>
+        <file>folder.svg</file>
+        <file>go-down.svg</file>
+        <file>go-first.svg</file>
+        <file>go-last.svg</file>
+        <file>go-next.svg</file>
+        <file>go-previous.svg</file>
+        <file>go-up.svg</file>
+        <file>icon.ico</file>
+        <file>icon.png</file>
+        <file>icon.svg</file>
+        <file>search.svg</file>
+        <file>settings.svg</file>
+        <file>zoom-in.svg</file>
+        <file>zoom-out.svg</file>
+    </qresource>
+</RCC>

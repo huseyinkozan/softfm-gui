@@ -20,19 +20,27 @@ DEFINES += APP_VER=\\\"$$APP_VER\\\"
 
 
 SOURCES += \
+    SettingsDialog.cpp \
     main.cpp \
     MainWindow.cpp
 
 HEADERS += \
-    MainWindow.h
+    MainWindow.h \
+    SettingsDialog.h
 
 FORMS += \
-    MainWindow.ui
+    MainWindow.ui \
+    SettingsDialog.ui
 
 TRANSLATIONS += \
     softfm-gui_tr_TR.ts
 CONFIG += lrelease
 CONFIG += embed_translations
+
+RESOURCES += \
+    resources/images/images.qrc
+
+
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
