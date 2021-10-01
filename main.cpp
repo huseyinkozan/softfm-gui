@@ -1,13 +1,13 @@
 #include "MainWindow.h"
 
-#include <QApplication>
 #include <QCommandLineParser>
 #include <QLocale>
+#include <QtSingleApplication>
 #include <QTranslator>
 
 int main(int argc, char *argv[])
 {
-    QApplication a(argc, argv);
+    QtSingleApplication a("softfm-gui", argc, argv);
 
     a.setOrganizationName(QString::fromUtf8("Hüseyin Kozan"));
     a.setOrganizationDomain("huseyinkozan.com.tr");
@@ -19,14 +19,12 @@ int main(int argc, char *argv[])
     parser.addHelpOption();
     parser.addVersionOption();
 
-    QCommandLineOption advancedOption(
-                QStringList() << "a" << "advanced", QObject::tr("Advanced Mode")
-                                  );
-    parser.addOption(advancedOption);
-
     parser.process(a);
 
-    bool isAdvancedMode = parser.isSet(advancedOption);
+    if (a.isRunning()) {
+        a.sendMessage("Wake up!");
+        return EXIT_SUCCESS;
+    }
 
     QTranslator translator;
     const QStringList uiLanguages = QLocale::system().uiLanguages();
@@ -41,8 +39,9 @@ int main(int argc, char *argv[])
     QApplication::setWindowIcon(QIcon(":/images/icon.svg"));
 
     MainWindow w;
-    w.setIsAdvancedMode(isAdvancedMode);
     w.show();
+
+    a.setActivationWindow(&w);
 
     return a.exec();
 }

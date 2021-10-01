@@ -21,5 +21,7 @@
         <file>settings.svg</file>
         <file>zoom-in.svg</file>
         <file>zoom-out.svg</file>
+        <file>stereo-off.svg</file>
+        <file>stereo-on.svg</file>
     </qresource>
 </RCC>

@@ -16,6 +16,11 @@ public:
     ~SettingsDialog();
 
     QString softfm() const;
+    bool isAdvancedMode() const;
+    bool isDarkMode() const;
+
+protected:
+    void showEvent(QShowEvent *event);
 
 private slots:
     void on_cancelButton_clicked();

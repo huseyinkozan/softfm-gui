@@ -1,8 +1,12 @@
-QT       += core gui
-
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+QT += core gui widgets
 
 CONFIG += c++11
+CONFIG += warn_on
+CONFIG += exceptions
+CONFIG += silent
+CONFIG += lrelease embed_translations       # embeds ":/i18n/gui_*.qm"
+
+include(thirdparty/qtsingleapplication/src/qtsingleapplication.pri)
 
 # You can make your code fail to compile if it uses deprecated APIs.
 # In order to do so, uncomment the following line.
@@ -38,7 +42,8 @@ CONFIG += lrelease
 CONFIG += embed_translations
 
 RESOURCES += \
-    resources/images/images.qrc
+    resources/images/images.qrc \
+    thirdparty/QDarkStyleSheet/qdarkstyle/style.qrc
 
 
 

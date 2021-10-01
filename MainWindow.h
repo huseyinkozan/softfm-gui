@@ -36,17 +36,27 @@ private slots:
     void processErrorOccurred(QProcess::ProcessError error);
 
     void settingsDialogFinished(int result);
-
     void on_actionSettings_triggered();
 
+    void radioOff();
+    void radioOn();
+    void on_onButton_clicked(bool checked);
+    void on_freqDoubleSpinBox_valueChanged(double);
+
+    void on_clearButton_clicked();
+
 private:
-    void handleAdvancedModeChange();
+    void applyDarkMode();
+    bool isRadioOn() const;
+    void updateAdvancedModeFields(const QString & txt);
+    void captureEvents(const QString & txt);
 
 private:
     Ui::MainWindow *ui;
-    bool m_isAdvancedMode = false;
     QLabel * m_versionLabel = nullptr;
     QProcess * m_process = nullptr;
     SettingsDialog * m_settingsDialog = nullptr;
+    bool m_isOnRequested = false;
+    double m_freq = 0.0;
 };
 #endif // MAINWINDOW_H

@@ -6,20 +6,251 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>381</width>
-    <height>444</height>
+    <width>432</width>
+    <height>575</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string/>
   </property>
-  <widget class="QWidget" name="centralwidget"/>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="verticalLayout_2">
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <widget class="QToolButton" name="onButton">
+        <property name="text">
+         <string>On</string>
+        </property>
+        <property name="icon">
+         <iconset resource="resources/images/images.qrc">
+          <normaloff>:/images/icon.svg</normaloff>:/images/icon.svg</iconset>
+        </property>
+        <property name="checkable">
+         <bool>true</bool>
+        </property>
+        <property name="toolButtonStyle">
+         <enum>Qt::ToolButtonTextBesideIcon</enum>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QToolButton" name="stereoButton">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="resources/images/images.qrc">
+          <normaloff>:/images/stereo-on.svg</normaloff>:/images/stereo-on.svg</iconset>
+        </property>
+        <property name="autoRaise">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QDoubleSpinBox" name="freqDoubleSpinBox">
+        <property name="wrapping">
+         <bool>true</bool>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+        <property name="accelerated">
+         <bool>true</bool>
+        </property>
+        <property name="keyboardTracking">
+         <bool>false</bool>
+        </property>
+        <property name="decimals">
+         <number>1</number>
+        </property>
+        <property name="minimum">
+         <double>87.000000000000000</double>
+        </property>
+        <property name="maximum">
+         <double>108.000000000000000</double>
+        </property>
+        <property name="singleStep">
+         <double>0.100000000000000</double>
+        </property>
+        <property name="value">
+         <double>88.799999999999997</double>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QToolButton" name="addButton">
+        <property name="text">
+         <string>Add</string>
+        </property>
+        <property name="icon">
+         <iconset resource="resources/images/images.qrc">
+          <normaloff>:/images/add.svg</normaloff>:/images/add.svg</iconset>
+        </property>
+        <property name="toolButtonStyle">
+         <enum>Qt::ToolButtonTextBesideIcon</enum>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QToolButton" name="removeButton">
+        <property name="text">
+         <string>Del</string>
+        </property>
+        <property name="icon">
+         <iconset resource="resources/images/images.qrc">
+          <normaloff>:/images/close.svg</normaloff>:/images/close.svg</iconset>
+        </property>
+        <property name="toolButtonStyle">
+         <enum>Qt::ToolButtonTextBesideIcon</enum>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <item>
+       <widget class="QTableWidget" name="tableWidget">
+        <property name="editTriggers">
+         <set>QAbstractItemView::NoEditTriggers</set>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QFrame" name="advancedFrame">
+        <property name="frameShape">
+         <enum>QFrame::StyledPanel</enum>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Raised</enum>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout">
+         <item>
+          <widget class="QDoubleSpinBox" name="advFreqDoubleSpinBox">
+           <property name="readOnly">
+            <bool>true</bool>
+           </property>
+           <property name="prefix">
+            <string>Freq </string>
+           </property>
+           <property name="suffix">
+            <string> MHz</string>
+           </property>
+           <property name="minimum">
+            <double>87.000000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>108.000000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QDoubleSpinBox" name="advPpmDoubleSpinBox">
+           <property name="readOnly">
+            <bool>true</bool>
+           </property>
+           <property name="prefix">
+            <string>PPM </string>
+           </property>
+           <property name="suffix">
+            <string> dB</string>
+           </property>
+           <property name="minimum">
+            <double>-99999999.000000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>99999999.000000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QDoubleSpinBox" name="advBbDoubleSpinBox">
+           <property name="readOnly">
+            <bool>true</bool>
+           </property>
+           <property name="prefix">
+            <string>BB </string>
+           </property>
+           <property name="suffix">
+            <string> dB</string>
+           </property>
+           <property name="minimum">
+            <double>-99999999.000000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>99999999.000000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QDoubleSpinBox" name="advAudioDoubleSpinBox">
+           <property name="readOnly">
+            <bool>true</bool>
+           </property>
+           <property name="prefix">
+            <string>Audio </string>
+           </property>
+           <property name="suffix">
+            <string> dB</string>
+           </property>
+           <property name="minimum">
+            <double>-99999999.000000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>99999999.000000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QDoubleSpinBox" name="advBufDoubleSpinBox">
+           <property name="readOnly">
+            <bool>true</bool>
+           </property>
+           <property name="prefix">
+            <string>Buf </string>
+           </property>
+           <property name="suffix">
+            <string> s</string>
+           </property>
+           <property name="minimum">
+            <double>-99999999.000000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>99999999.000000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="verticalSpacer">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>41</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </widget>
+      </item>
+     </layout>
+    </item>
+   </layout>
+  </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>381</width>
+     <width>432</width>
      <height>22</height>
     </rect>
    </property>
@@ -31,9 +262,6 @@
    </attribute>
    <widget class="QWidget" name="dockWidgetContents">
     <layout class="QGridLayout" name="gridLayout">
-     <item row="1" column="0" colspan="2">
-      <widget class="QTextEdit" name="logTextEdit"/>
-     </item>
      <item row="0" column="1">
       <widget class="QToolButton" name="clearButton">
        <property name="text">
@@ -53,6 +281,16 @@
         </size>
        </property>
       </spacer>
+     </item>
+     <item row="1" column="0" colspan="2">
+      <widget class="QTextEdit" name="logTextEdit">
+       <property name="undoRedoEnabled">
+        <bool>false</bool>
+       </property>
+       <property name="readOnly">
+        <bool>true</bool>
+       </property>
+      </widget>
      </item>
     </layout>
    </widget>
