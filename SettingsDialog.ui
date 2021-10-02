@@ -48,7 +48,7 @@
         </item>
        </layout>
       </item>
-      <item row="3" column="0" colspan="2">
+      <item row="4" column="0" colspan="2">
        <spacer name="verticalSpacer">
         <property name="orientation">
          <enum>Qt::Vertical</enum>
@@ -61,32 +61,68 @@
         </property>
        </spacer>
       </item>
-      <item row="1" column="0">
+      <item row="2" column="0">
        <widget class="QLabel" name="advancedModeLabel">
         <property name="text">
          <string>Advanced Mode</string>
         </property>
        </widget>
       </item>
-      <item row="1" column="1">
+      <item row="2" column="1">
        <widget class="QCheckBox" name="advancedModeCheckBox">
         <property name="text">
          <string>Enabled</string>
         </property>
        </widget>
       </item>
-      <item row="2" column="0">
+      <item row="3" column="0">
        <widget class="QLabel" name="darkModeLabel">
         <property name="text">
          <string>Dark Mode</string>
         </property>
        </widget>
       </item>
-      <item row="2" column="1">
+      <item row="3" column="1">
        <widget class="QCheckBox" name="darkModeCheckBox">
         <property name="text">
          <string>Enabled</string>
         </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="deviceTypeLabel">
+        <property name="text">
+         <string>Device Type</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QComboBox" name="deviceTypeComboBox">
+        <item>
+         <property name="text">
+          <string notr="true">airspy</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string notr="true">bladerf</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string notr="true">hackrf</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string notr="true">rtlsdr</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>wave</string>
+         </property>
+        </item>
        </widget>
       </item>
      </layout>

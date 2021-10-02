@@ -3,7 +3,7 @@
 
 #include <QMainWindow>
 #include <QProcess>
-
+#include "main.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -42,14 +42,21 @@ private slots:
     void radioOn();
     void on_onButton_clicked(bool checked);
     void on_freqDoubleSpinBox_valueChanged(double);
-
     void on_clearButton_clicked();
+
+    void fillTable();
+    void tableActionRemove(double freq);
+    void on_addButton_clicked();
+    void selectTableRow(double freq);
+    void on_tableWidget_itemSelectionChanged();
+
 
 private:
     void applyDarkMode();
     bool isRadioOn() const;
     void updateAdvancedModeFields(const QString & txt);
     void captureEvents(const QString & txt);
+    FreqDescMap tableData() const;
 
 private:
     Ui::MainWindow *ui;

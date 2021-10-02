@@ -21,6 +21,11 @@ QString SettingsDialog::softfm() const
     return QSettings().value("Settings/softfm", ui->softfmLineEdit->text()).toString();
 }
 
+QString SettingsDialog::deviceType() const
+{
+    return QSettings().value("Settings/deviceType", "rtlsdr").toString();
+}
+
 bool SettingsDialog::isAdvancedMode() const
 {
     return QSettings().value("Settings/isAdvancedMode", false).toBool();
@@ -34,6 +39,7 @@ bool SettingsDialog::isDarkMode() const
 void SettingsDialog::showEvent(QShowEvent *event)
 {
     ui->softfmLineEdit->setText(softfm());
+    ui->deviceTypeComboBox->setCurrentText(deviceType());
     ui->advancedModeCheckBox->setChecked(isAdvancedMode());
     ui->darkModeCheckBox->setChecked(isDarkMode());
     QDialog::showEvent(event);
@@ -50,6 +56,7 @@ void SettingsDialog::on_saveButton_clicked()
     QSettings s;
     s.beginGroup("Settings");
     s.setValue("softfm", ui->softfmLineEdit->text());
+    s.setValue("deviceType", ui->deviceTypeComboBox->currentText());
     s.setValue("isAdvancedMode", ui->advancedModeCheckBox->isChecked());
     s.setValue("isDarkMode", ui->darkModeCheckBox->isChecked());
     s.endGroup();

@@ -23,5 +23,7 @@
         <file>zoom-out.svg</file>
         <file>stereo-off.svg</file>
         <file>stereo-on.svg</file>
+        <file>trash.svg</file>
+        <file>log.svg</file>
     </qresource>
 </RCC>

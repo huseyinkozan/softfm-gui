@@ -25,16 +25,20 @@ DEFINES += APP_VER=\\\"$$APP_VER\\\"
 
 SOURCES += \
     SettingsDialog.cpp \
+    TableActionWidget.cpp \
     main.cpp \
     MainWindow.cpp
 
 HEADERS += \
     MainWindow.h \
-    SettingsDialog.h
+    SettingsDialog.h \
+    TableActionWidget.h \
+    main.h
 
 FORMS += \
     MainWindow.ui \
-    SettingsDialog.ui
+    SettingsDialog.ui \
+    TableActionWidget.ui
 
 TRANSLATIONS += \
     softfm-gui_tr_TR.ts

@@ -16,6 +16,7 @@ public:
     ~SettingsDialog();
 
     QString softfm() const;
+    QString deviceType() const;
     bool isAdvancedMode() const;
     bool isDarkMode() const;
 

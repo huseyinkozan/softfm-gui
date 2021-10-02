@@ -4,6 +4,8 @@
 #include <QLocale>
 #include <QtSingleApplication>
 #include <QTranslator>
+#include "main.h"
+
 
 int main(int argc, char *argv[])
 {
@@ -14,6 +16,9 @@ int main(int argc, char *argv[])
     a.setApplicationName("softfm-gui");
     a.setApplicationDisplayName(QObject::tr("SoftFM GUI"));
     a.setApplicationVersion(APP_VER);
+
+    qRegisterMetaType<FreqDescMap>("FreqDescMap");
+    qRegisterMetaTypeStreamOperators<FreqDescMap>("FreqDescMap");
 
     QCommandLineParser parser;
     parser.addHelpOption();
