@@ -85,6 +85,16 @@ MainWindow::MainWindow(QWidget *parent)
     m_settingsDialog->setObjectName("m_settingsDialog");
     connect(m_settingsDialog, &SettingsDialog::finished, this, &MainWindow::settingsDialogFinished);
 
+    QAction * quitAction = new QAction(tr("&Quit"), this);
+    connect(quitAction, &QAction::triggered, qApp, &QCoreApplication::quit);
+    QMenu * trayIconMenu = new QMenu(this);
+    trayIconMenu->addAction(quitAction);
+    m_trayIcon = new QSystemTrayIcon(this);
+    m_trayIcon->setContextMenu(trayIconMenu);
+    m_trayIcon->setIcon(QIcon(":/images/tray-icon.svg"));
+    m_trayIcon->show();
+    connect(m_trayIcon, &QSystemTrayIcon::activated, this, &MainWindow::trayIconActivated);
+
     readSettings();
 
     QTimer::singleShot(0, this, [this]{
@@ -362,6 +372,21 @@ void MainWindow::on_tableWidget_itemSelectionChanged()
     if ( ! ok)
         return;
     ui->freqDoubleSpinBox->setValue(itemFreq);
+}
+
+void MainWindow::trayIconActivated(QSystemTrayIcon::ActivationReason reason)
+{
+    switch (reason) {
+    case QSystemTrayIcon::Trigger:
+    case QSystemTrayIcon::DoubleClick:
+        show();
+        break;
+    case QSystemTrayIcon::MiddleClick:
+        ui->onButton->animateClick();
+        break;
+    default:
+        ;
+    }
 }
 
 void MainWindow::applyDarkMode()

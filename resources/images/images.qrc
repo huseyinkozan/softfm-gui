@@ -25,5 +25,6 @@
         <file>stereo-on.svg</file>
         <file>trash.svg</file>
         <file>log.svg</file>
+        <file>tray-icon.svg</file>
     </qresource>
 </RCC>

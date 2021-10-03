@@ -3,7 +3,7 @@
    viewBox="0 0 96 96"
    version="1.1"
    id="svg5"
-   sodipodi:docname="icon.svg"
+   sodipodi:docname="tray-icon.svg"
    width="96"
    height="96"
    inkscape:version="1.1.1 (1:1.1+202109281949+c3084ef5ed)"
@@ -25,7 +25,6 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -42,9 +41,9 @@
      inkscape:window-height="1043"
      id="namedview7"
      showgrid="false"
-     inkscape:zoom="2.4346591"
-     inkscape:cx="74.137689"
-     inkscape:cy="28.751458"
+     inkscape:zoom="4.8693182"
+     inkscape:cx="56.784131"
+     inkscape:cy="38.403734"
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="1"
@@ -70,63 +69,26 @@
      y="-96"
      transform="rotate(90)" />
   <g
-     id="g2490"
-     transform="translate(-0.20596218,0.57248253)">
-    <g
-       id="g2472"
-       transform="rotate(-60,22.081939,-34.011302)">
-      <rect
-         style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:2.4;stroke-linecap:butt"
-         id="rect1993"
-         width="2.865"
-         height="21.36796"
-         x="-19.335152"
-         y="29.409849"
-         rx="0"
-         ry="0" />
-      <rect
-         style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:2.4;stroke-linecap:butt"
-         id="rect2196"
-         width="1.8905505"
-         height="21.36796"
-         x="-18.847927"
-         y="8.0418892"
-         rx="0"
-         ry="0" />
-      <rect
-         style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:2.4;stroke-linecap:butt"
-         id="rect2297"
-         width="1.1682795"
-         height="21.36796"
-         x="-18.486792"
-         y="-13.326071"
-         rx="0"
-         ry="0" />
-      <rect
-         style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:2.4;stroke-linecap:butt"
-         id="rect2386"
-         width="2.0908864"
-         height="2.0908864"
-         x="-18.948095"
-         y="-15.416958" />
-    </g>
+     id="g966"
+     transform="matrix(1.3078372,0,0,1.3078372,-14.776186,-35.697859)">
     <rect
        style="fill:#232323;stroke:#969696;stroke-width:2.4;stroke-linecap:round"
        id="rect851"
        width="68.676498"
        height="42.444405"
-       x="13.867713"
-       y="42.202469"
+       x="13.661751"
+       y="42.774952"
        rx="2.6917801"
        ry="2.6917801" />
     <circle
        style="fill:#ffffff;fill-opacity:1;stroke:#969696;stroke-width:1.89621;stroke-linecap:round"
        id="path877"
-       cx="60.474335"
-       cy="63.424671"
+       cx="60.268372"
+       cy="63.997154"
        r="10.634466" />
     <g
-       id="g2477">
+       id="g2477"
+       transform="translate(-0.20596218,0.57248253)">
       <circle
          style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:2.4;stroke-linecap:round"
          id="path1125"

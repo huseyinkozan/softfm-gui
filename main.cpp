@@ -17,6 +17,9 @@ int main(int argc, char *argv[])
     a.setApplicationDisplayName(QObject::tr("SoftFM GUI"));
     a.setApplicationVersion(APP_VER);
 
+    a.setAttribute(Qt::AA_UseHighDpiPixmaps);
+    a.setQuitOnLastWindowClosed(false);
+
     qRegisterMetaType<FreqDescMap>("FreqDescMap");
     qRegisterMetaTypeStreamOperators<FreqDescMap>("FreqDescMap");
 

@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QProcess>
+#include <QSystemTrayIcon>
 #include "main.h"
 
 QT_BEGIN_NAMESPACE
@@ -50,6 +51,7 @@ private slots:
     void selectTableRow(double freq);
     void on_tableWidget_itemSelectionChanged();
 
+    void trayIconActivated(QSystemTrayIcon::ActivationReason reason);
 
 private:
     void applyDarkMode();
@@ -65,5 +67,6 @@ private:
     SettingsDialog * m_settingsDialog = nullptr;
     bool m_isOnRequested = false;
     double m_freq = 0.0;
+    QSystemTrayIcon * m_trayIcon = nullptr;
 };
 #endif // MAINWINDOW_H
