@@ -52,12 +52,29 @@
        </widget>
       </item>
       <item>
+       <widget class="QToolButton" name="freqDownButton">
+        <property name="statusTip">
+         <string>Freq Down</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="resources/images/images.qrc">
+          <normaloff>:/images/go-previous.svg</normaloff>:/images/go-previous.svg</iconset>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QDoubleSpinBox" name="freqDoubleSpinBox">
         <property name="wrapping">
          <bool>true</bool>
         </property>
         <property name="alignment">
          <set>Qt::AlignCenter</set>
+        </property>
+        <property name="buttonSymbols">
+         <enum>QAbstractSpinBox::NoButtons</enum>
         </property>
         <property name="accelerated">
          <bool>true</bool>
@@ -79,6 +96,20 @@
         </property>
         <property name="value">
          <double>88.799999999999997</double>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QToolButton" name="freqUpButton">
+        <property name="statusTip">
+         <string>Freq Up</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="resources/images/images.qrc">
+          <normaloff>:/images/go-next.svg</normaloff>:/images/go-next.svg</iconset>
         </property>
        </widget>
       </item>
@@ -306,6 +337,7 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
+   <addaction name="actionQuit"/>
    <addaction name="actionSettings"/>
   </widget>
   <action name="actionSettings">
@@ -315,6 +347,18 @@
    </property>
    <property name="text">
     <string>Settings</string>
+   </property>
+  </action>
+  <action name="actionQuit">
+   <property name="icon">
+    <iconset resource="resources/images/images.qrc">
+     <normaloff>:/images/exit.svg</normaloff>:/images/exit.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Quit</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Q</string>
    </property>
   </action>
  </widget>

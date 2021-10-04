@@ -36,6 +36,7 @@ private slots:
     void processReadyReadStandardOutput();
     void processErrorOccurred(QProcess::ProcessError error);
 
+    void on_actionQuit_triggered();
     void settingsDialogFinished(int result);
     void on_actionSettings_triggered();
 
@@ -43,6 +44,8 @@ private slots:
     void radioOn();
     void on_onButton_clicked(bool checked);
     void on_freqDoubleSpinBox_valueChanged(double);
+    void on_freqDownButton_clicked();
+    void on_freqUpButton_clicked();
     void on_clearButton_clicked();
 
     void fillTable();

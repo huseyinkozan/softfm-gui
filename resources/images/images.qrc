@@ -26,5 +26,7 @@
         <file>trash.svg</file>
         <file>log.svg</file>
         <file>tray-icon.svg</file>
+        <file>tray-icon-playing.svg</file>
+        <file>exit.svg</file>
     </qresource>
 </RCC>

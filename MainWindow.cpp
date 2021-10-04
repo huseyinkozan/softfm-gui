@@ -196,6 +196,11 @@ void MainWindow::processErrorOccurred(QProcess::ProcessError error)
     ui->logTextEdit->append(tr("ProcessError:%1").arg(m_process->errorString()));
 }
 
+void MainWindow::on_actionQuit_triggered()
+{
+    qApp->quit();
+}
+
 void MainWindow::settingsDialogFinished(int result)
 {
     if (result != SettingsDialog::Accepted)
@@ -255,6 +260,10 @@ void MainWindow::on_onButton_clicked(bool checked)
         radioOn();
     else
         radioOff();
+
+    if (m_isOnRequested)
+         m_trayIcon->setIcon(QIcon(":/images/tray-icon-playing.svg"));
+    else m_trayIcon->setIcon(QIcon(":/images/tray-icon.svg"));
 }
 
 void MainWindow::on_freqDoubleSpinBox_valueChanged(double)
@@ -270,6 +279,16 @@ void MainWindow::on_freqDoubleSpinBox_valueChanged(double)
         radioOff(); // will on after terminate
     else
         radioOn();
+}
+
+void MainWindow::on_freqDownButton_clicked()
+{
+    ui->freqDoubleSpinBox->stepDown();
+}
+
+void MainWindow::on_freqUpButton_clicked()
+{
+    ui->freqDoubleSpinBox->stepUp();
 }
 
 void MainWindow::on_clearButton_clicked()
