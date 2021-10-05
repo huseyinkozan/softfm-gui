@@ -95,6 +95,10 @@ MainWindow::MainWindow(QWidget *parent)
     m_trayIcon->show();
     connect(m_trayIcon, &QSystemTrayIcon::activated, this, &MainWindow::trayIconActivated);
 
+    m_changeFreqTimer = new QTimer(this);
+    m_changeFreqTimer->setSingleShot(true);
+    connect(m_changeFreqTimer, &QTimer::timeout, this, &MainWindow::changeFreq);
+
     readSettings();
 
     QTimer::singleShot(0, this, [this]{
@@ -158,6 +162,9 @@ void MainWindow::processFinished(int exitCode, QProcess::ExitStatus exitStatus)
 
 void MainWindow::processStateChanged(QProcess::ProcessState state)
 {
+    if ( ! m_settingsDialog->isAdvancedMode())
+        return;
+
     ui->logTextEdit->append(tr("Process State = %1")
                             .arg(QVariant::fromValue(state).toString()));
 }
@@ -231,6 +238,7 @@ void MainWindow::radioOn()
         return;
 
     if (isRadioOn()) {
+        // postpone until m_process finished
         QTimer::singleShot(100, this, &MainWindow::radioOn);
         return;
     }
@@ -250,6 +258,17 @@ void MainWindow::radioOn()
                             );
 
     m_process->start();
+}
+
+void MainWindow::changeFreq()
+{
+    if ( ! m_isOnRequested)
+        return;
+
+    if (isRadioOn())
+        radioOff(); // will on after terminate
+    else
+        radioOn();
 }
 
 void MainWindow::on_onButton_clicked(bool checked)
@@ -275,10 +294,7 @@ void MainWindow::on_freqDoubleSpinBox_valueChanged(double)
 
     selectTableRow(m_freq);
 
-    if (isRadioOn())
-        radioOff(); // will on after terminate
-    else
-        radioOn();
+    m_changeFreqTimer->start(500);
 }
 
 void MainWindow::on_freqDownButton_clicked()

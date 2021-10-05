@@ -94,6 +94,9 @@
         <property name="singleStep">
          <double>0.100000000000000</double>
         </property>
+        <property name="stepType">
+         <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
+        </property>
         <property name="value">
          <double>88.799999999999997</double>
         </property>

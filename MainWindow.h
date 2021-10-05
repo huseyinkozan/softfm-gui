@@ -42,6 +42,7 @@ private slots:
 
     void radioOff();
     void radioOn();
+    void changeFreq();
     void on_onButton_clicked(bool checked);
     void on_freqDoubleSpinBox_valueChanged(double);
     void on_freqDownButton_clicked();
@@ -71,5 +72,6 @@ private:
     bool m_isOnRequested = false;
     double m_freq = 0.0;
     QSystemTrayIcon * m_trayIcon = nullptr;
+    QTimer * m_changeFreqTimer = nullptr;
 };
 #endif // MAINWINDOW_H
