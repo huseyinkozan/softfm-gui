@@ -36,14 +36,14 @@ private slots:
     void processReadyReadStandardOutput();
     void processErrorOccurred(QProcess::ProcessError error);
 
-    void on_actionQuit_triggered();
+    void on_actionExit_triggered();
     void settingsDialogFinished(int result);
     void on_actionSettings_triggered();
 
     void radioOff();
     void radioOn();
     void changeFreq();
-    void on_onButton_clicked(bool checked);
+    void on_actionOn_triggered(bool checked);
     void on_freqDoubleSpinBox_valueChanged(double);
     void on_freqDownButton_clicked();
     void on_freqUpButton_clicked();
@@ -56,6 +56,8 @@ private slots:
     void on_tableWidget_itemSelectionChanged();
 
     void trayIconActivated(QSystemTrayIcon::ActivationReason reason);
+
+
 
 private:
     void applyDarkMode();

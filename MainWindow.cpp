@@ -36,7 +36,7 @@ MainWindow::MainWindow(QWidget *parent)
     logDockAction->setObjectName("logDockAction");
     logDockAction->setIcon(QIcon(":images/log.svg"));
     logDockAction->setStatusTip(tr("Show Log"));
-    ui->toolBar->insertAction(ui->actionSettings, logDockAction);
+    ui->toolBar->insertAction(ui->actionExit, logDockAction);
 
     QTextDocument * logDoc = ui->logTextEdit->document();
     if (logDoc)
@@ -203,7 +203,7 @@ void MainWindow::processErrorOccurred(QProcess::ProcessError error)
     ui->logTextEdit->append(tr("ProcessError:%1").arg(m_process->errorString()));
 }
 
-void MainWindow::on_actionQuit_triggered()
+void MainWindow::on_actionExit_triggered()
 {
     qApp->quit();
 }
@@ -271,7 +271,7 @@ void MainWindow::changeFreq()
         radioOn();
 }
 
-void MainWindow::on_onButton_clicked(bool checked)
+void MainWindow::on_actionOn_triggered(bool checked)
 {
     m_isOnRequested = checked;
 
@@ -416,9 +416,16 @@ void MainWindow::trayIconActivated(QSystemTrayIcon::ActivationReason reason)
     case QSystemTrayIcon::DoubleClick:
         show();
         break;
-    case QSystemTrayIcon::MiddleClick:
-        ui->onButton->animateClick();
+    case QSystemTrayIcon::MiddleClick: {
+        QWidget * onW = ui->toolBar->widgetForAction(ui->actionOn);
+        if (onW) {
+            QToolButton * onTb = qobject_cast<QToolButton*>(onW);
+            if (onTb) {
+                onTb->animateClick();
+            }
+        }
         break;
+    }
     default:
         ;
     }

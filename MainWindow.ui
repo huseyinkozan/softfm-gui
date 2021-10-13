@@ -18,23 +18,6 @@
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
-       <widget class="QToolButton" name="onButton">
-        <property name="text">
-         <string>On</string>
-        </property>
-        <property name="icon">
-         <iconset resource="resources/images/images.qrc">
-          <normaloff>:/images/icon.svg</normaloff>:/images/icon.svg</iconset>
-        </property>
-        <property name="checkable">
-         <bool>true</bool>
-        </property>
-        <property name="toolButtonStyle">
-         <enum>Qt::ToolButtonTextBesideIcon</enum>
-        </property>
-       </widget>
-      </item>
-      <item>
        <widget class="QToolButton" name="stereoButton">
         <property name="enabled">
          <bool>false</bool>
@@ -124,9 +107,6 @@
         <property name="icon">
          <iconset resource="resources/images/images.qrc">
           <normaloff>:/images/add.svg</normaloff>:/images/add.svg</iconset>
-        </property>
-        <property name="toolButtonStyle">
-         <enum>Qt::ToolButtonTextBesideIcon</enum>
         </property>
        </widget>
       </item>
@@ -289,6 +269,9 @@
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
   <widget class="QDockWidget" name="logDockWidget">
+   <property name="windowTitle">
+    <string>Log</string>
+   </property>
    <attribute name="dockWidgetArea">
     <number>8</number>
    </attribute>
@@ -331,6 +314,9 @@
    <property name="windowTitle">
     <string>toolBar</string>
    </property>
+   <property name="toolButtonStyle">
+    <enum>Qt::ToolButtonTextUnderIcon</enum>
+   </property>
    <property name="floatable">
     <bool>false</bool>
    </property>
@@ -340,7 +326,8 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-   <addaction name="actionQuit"/>
+   <addaction name="actionOn"/>
+   <addaction name="actionExit"/>
    <addaction name="actionSettings"/>
   </widget>
   <action name="actionSettings">
@@ -349,19 +336,34 @@
      <normaloff>:/images/settings.svg</normaloff>:/images/settings.svg</iconset>
    </property>
    <property name="text">
-    <string>Settings</string>
+    <string>&amp;Settings</string>
    </property>
   </action>
-  <action name="actionQuit">
+  <action name="actionExit">
    <property name="icon">
     <iconset resource="resources/images/images.qrc">
      <normaloff>:/images/exit.svg</normaloff>:/images/exit.svg</iconset>
    </property>
    <property name="text">
-    <string>Quit</string>
+    <string>&amp;Exit</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Q</string>
+   </property>
+  </action>
+  <action name="actionOn">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resources/images/images.qrc">
+     <normaloff>:/images/icon.svg</normaloff>:/images/icon.svg</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;On</string>
+   </property>
+   <property name="shortcut">
+    <string>F5</string>
    </property>
   </action>
  </widget>
