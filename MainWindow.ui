@@ -22,6 +22,9 @@
         <property name="enabled">
          <bool>false</bool>
         </property>
+        <property name="statusTip">
+         <string>Shows stereo info</string>
+        </property>
         <property name="text">
          <string/>
         </property>
@@ -37,7 +40,7 @@
       <item>
        <widget class="QToolButton" name="freqDownButton">
         <property name="statusTip">
-         <string>Freq Down</string>
+         <string>Freq down</string>
         </property>
         <property name="text">
          <string/>
@@ -88,7 +91,7 @@
       <item>
        <widget class="QToolButton" name="freqUpButton">
         <property name="statusTip">
-         <string>Freq Up</string>
+         <string>Freq up</string>
         </property>
         <property name="text">
          <string/>
@@ -101,6 +104,9 @@
       </item>
       <item>
        <widget class="QToolButton" name="addButton">
+        <property name="statusTip">
+         <string>Add freq to list</string>
+        </property>
         <property name="text">
          <string>Add</string>
         </property>
@@ -279,6 +285,9 @@
     <layout class="QGridLayout" name="gridLayout">
      <item row="0" column="1">
       <widget class="QToolButton" name="clearButton">
+       <property name="statusTip">
+        <string>Clear the log</string>
+       </property>
        <property name="text">
         <string>Clear</string>
        </property>
@@ -338,6 +347,9 @@
    <property name="text">
     <string>&amp;Settings</string>
    </property>
+   <property name="statusTip">
+    <string>Open settings</string>
+   </property>
   </action>
   <action name="actionExit">
    <property name="icon">
@@ -346,6 +358,9 @@
    </property>
    <property name="text">
     <string>&amp;Exit</string>
+   </property>
+   <property name="statusTip">
+    <string>Exit from the application</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Q</string>
@@ -361,6 +376,9 @@
    </property>
    <property name="text">
     <string>&amp;On</string>
+   </property>
+   <property name="statusTip">
+    <string>On / Off the radio</string>
    </property>
    <property name="shortcut">
     <string>F5</string>

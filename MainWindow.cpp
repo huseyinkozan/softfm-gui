@@ -85,10 +85,10 @@ MainWindow::MainWindow(QWidget *parent)
     m_settingsDialog->setObjectName("m_settingsDialog");
     connect(m_settingsDialog, &SettingsDialog::finished, this, &MainWindow::settingsDialogFinished);
 
-    QAction * quitAction = new QAction(tr("&Quit"), this);
-    connect(quitAction, &QAction::triggered, qApp, &QCoreApplication::quit);
+    QAction * exitAction = new QAction(tr("&Exit"), this);
+    connect(exitAction, &QAction::triggered, qApp, &QCoreApplication::quit);
     QMenu * trayIconMenu = new QMenu(this);
-    trayIconMenu->addAction(quitAction);
+    trayIconMenu->addAction(exitAction);
     m_trayIcon = new QSystemTrayIcon(this);
     m_trayIcon->setContextMenu(trayIconMenu);
     m_trayIcon->setIcon(QIcon(":/images/tray-icon.svg"));
@@ -147,7 +147,7 @@ void MainWindow::readSettings()
 void MainWindow::processFinished(int exitCode, QProcess::ExitStatus exitStatus)
 {
     ui->stereoButton->setEnabled(false);
-    ui->stereoButton->setStatusTip("");
+    ui->stereoButton->setStatusTip("Shows stereo info");
 
     if (exitStatus != QProcess::NormalExit) {
         ui->logTextEdit->append(tr("Process crash exit"));
@@ -173,28 +173,28 @@ void MainWindow::processReadyReadStandardError()
 {
     const QString txt = QString::fromUtf8(m_process->readAllStandardError());
 
+    captureEvents(txt);
+
     if ( ! m_settingsDialog->isAdvancedMode())
         return;
 
     ui->logTextEdit->append(txt);
 
     updateAdvancedModeFields(txt);
-
-    captureEvents(txt);
 }
 
 void MainWindow::processReadyReadStandardOutput()
 {
     const QString txt = QString::fromUtf8(m_process->readAllStandardOutput());
 
+    captureEvents(txt);
+
     if ( ! m_settingsDialog->isAdvancedMode())
         return;
 
     ui->logTextEdit->append(txt);
 
     updateAdvancedModeFields(txt);
-
-    captureEvents(txt);
 }
 
 void MainWindow::processErrorOccurred(QProcess::ProcessError error)
@@ -500,23 +500,26 @@ void MainWindow::updateAdvancedModeFields(const QString &txt)
 
 void MainWindow::captureEvents(const QString &txt)
 {
+//    qDebug() << Q_FUNC_INFO << txt;
+
     if (txt.contains("SoftFM")) {
         // started
         ui->stereoButton->setEnabled(true);
+        ui->stereoButton->setStatusTip(tr("Shows stereo info"));
     }
     else if (txt.contains("got stereo signal")) {
         // got
         if (m_settingsDialog->isDarkMode())
              ui->stereoButton->setIcon(QIcon(":/images/stereo-off.svg"));
         else ui->stereoButton->setIcon(QIcon(":/images/stereo-on.svg"));
-        ui->stereoButton->setStatusTip(tr("Stereo"));
+        ui->stereoButton->setStatusTip(tr("Sound is stereo"));
     }
     else if (txt.contains("no/lost stereo signal")) {
         // lost
         if (m_settingsDialog->isDarkMode())
              ui->stereoButton->setIcon(QIcon(":/images/stereo-on.svg"));
         else ui->stereoButton->setIcon(QIcon(":/images/stereo-off.svg"));
-        ui->stereoButton->setStatusTip(tr("Not Stereo"));
+        ui->stereoButton->setStatusTip(tr("Sound is not stereo"));
     }
 }
 
