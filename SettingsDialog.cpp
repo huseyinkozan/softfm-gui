@@ -36,12 +36,41 @@ bool SettingsDialog::isDarkMode() const
     return QSettings().value("Settings/isDarkMode", false).toBool();
 }
 
+QStringList SettingsDialog::commandArgs(double freq, bool forPreview) const
+{
+    const quint64 freqInt = freq * 1000000;
+    const bool isAdv = forPreview ? ui->advancedModeCheckBox->isChecked() : isAdvancedMode();
+    const QString dt = forPreview ? ui->deviceTypeComboBox->currentText() : deviceType();
+    const bool isSte = isStereo();
+
+    QStringList args;
+    if ( ! isAdv)
+        args << "-q";
+    if ( ! isSte)
+        args << "-M";
+    args << "-t" << dt;
+    args << "-c" << QString("freq=%1").arg(freqInt);
+
+    return args;
+}
+
+bool SettingsDialog::isStereo() const
+{
+    return QSettings().value("Settings/isStereo", true).toBool();
+}
+
+void SettingsDialog::setIsStereo(bool isStereo)
+{
+    QSettings().setValue("Settings/isStereo", isStereo);
+}
+
 void SettingsDialog::showEvent(QShowEvent *event)
 {
     ui->softfmLineEdit->setText(softfm());
     ui->deviceTypeComboBox->setCurrentText(deviceType());
     ui->advancedModeCheckBox->setChecked(isAdvancedMode());
     ui->darkModeCheckBox->setChecked(isDarkMode());
+    updateCommandPreview();
     QDialog::showEvent(event);
 }
 
@@ -74,5 +103,22 @@ void SettingsDialog::on_softfmButton_clicked()
     if (fn.isEmpty())
         return;
     ui->softfmLineEdit->setText(fn);
+}
+
+void SettingsDialog::updateCommandPreview()
+{
+    QString text = QString("%1 %2").arg(softfm(), commandArgs(88.8, true).join(' '));
+    ui->commandPreviewTextEdit->setText(text);
+}
+
+void SettingsDialog::on_advancedModeCheckBox_clicked()
+{
+    updateCommandPreview();
+}
+
+
+void SettingsDialog::on_deviceTypeComboBox_currentIndexChanged(int)
+{
+    updateCommandPreview();
 }
 

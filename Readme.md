@@ -2,7 +2,7 @@
 
 A GUI wrapper for softfm.
 
-Tested with https://github.com/hayguen/ngsoftfm
+Tested with `dev` branch of https://github.com/hayguen/ngsoftfm
 
 ## Screenshots
 

@@ -21,12 +21,12 @@
         <file>settings.svg</file>
         <file>zoom-in.svg</file>
         <file>zoom-out.svg</file>
-        <file>stereo-off.svg</file>
-        <file>stereo-on.svg</file>
         <file>trash.svg</file>
         <file>log.svg</file>
         <file>tray-icon.svg</file>
         <file>tray-icon-playing.svg</file>
         <file>exit.svg</file>
+        <file>mono.svg</file>
+        <file>stereo.svg</file>
     </qresource>
 </RCC>

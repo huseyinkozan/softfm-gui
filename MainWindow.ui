@@ -19,21 +19,21 @@
      <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
        <widget class="QToolButton" name="stereoButton">
-        <property name="enabled">
-         <bool>false</bool>
-        </property>
         <property name="statusTip">
-         <string>Shows stereo info</string>
+         <string>Stereo</string>
         </property>
         <property name="text">
          <string/>
         </property>
         <property name="icon">
          <iconset resource="resources/images/images.qrc">
-          <normaloff>:/images/stereo-on.svg</normaloff>:/images/stereo-on.svg</iconset>
+          <normaloff>:/images/stereo.svg</normaloff>:/images/stereo.svg</iconset>
         </property>
-        <property name="autoRaise">
+        <property name="checkable">
          <bool>true</bool>
+        </property>
+        <property name="checked">
+         <bool>false</bool>
         </property>
        </widget>
       </item>

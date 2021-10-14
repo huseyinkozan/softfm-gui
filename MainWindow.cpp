@@ -47,6 +47,11 @@ MainWindow::MainWindow(QWidget *parent)
     exp1->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
     ui->toolBar->insertWidget(ui->actionSettings, exp1);
 
+    m_stereoLabel = new QLabel("");
+    m_stereoLabel->setObjectName("m_stereoLabel");
+    m_stereoLabel->setStatusTip(tr("Shows stereo info"));
+    statusBar()->addPermanentWidget(m_stereoLabel);
+
     m_versionLabel = new QLabel(tr("%1").arg(qApp->applicationVersion()));
     m_versionLabel->setObjectName("m_versionLabel");
     m_versionLabel->setEnabled(false);
@@ -146,8 +151,7 @@ void MainWindow::readSettings()
 
 void MainWindow::processFinished(int exitCode, QProcess::ExitStatus exitStatus)
 {
-    ui->stereoButton->setEnabled(false);
-    ui->stereoButton->setStatusTip("Shows stereo info");
+    m_stereoLabel->setText("");
 
     if (exitStatus != QProcess::NormalExit) {
         ui->logTextEdit->append(tr("Process crash exit"));
@@ -215,6 +219,7 @@ void MainWindow::settingsDialogFinished(int result)
     m_process->setProgram(m_settingsDialog->softfm());
     ui->advancedFrame->setVisible(m_settingsDialog->isAdvancedMode());
     applyDarkMode();
+    ui->stereoButton->setChecked(m_settingsDialog->isStereo());
     radioOn();
 }
 
@@ -243,21 +248,16 @@ void MainWindow::radioOn()
         return;
     }
 
-    const quint64 freq = ui->freqDoubleSpinBox->value() * 1000000;
+    const double freq = ui->freqDoubleSpinBox->value();
 
-    QStringList args;
-    if ( ! m_settingsDialog->isAdvancedMode())
-        args << "-q";
-    args << "-t" << m_settingsDialog->deviceType();
-    args << "-c" << QString("freq=%1").arg(freq);
+    const QStringList args = m_settingsDialog->commandArgs(freq);
+
     m_process->setArguments(args);
-
-    ui->logTextEdit->append(tr("> %1 %2")
-                            .arg(m_settingsDialog->softfm(),
-                                 args.join(' '))
-                            );
-
     m_process->start();
+
+    ui->logTextEdit->append(QString("> %1 %2")
+                            .arg(m_settingsDialog->softfm(), args.join(' '))
+                            );
 }
 
 void MainWindow::changeFreq()
@@ -504,22 +504,13 @@ void MainWindow::captureEvents(const QString &txt)
 
     if (txt.contains("SoftFM")) {
         // started
-        ui->stereoButton->setEnabled(true);
-        ui->stereoButton->setStatusTip(tr("Shows stereo info"));
+        m_stereoLabel->setText("?");
     }
     else if (txt.contains("got stereo signal")) {
-        // got
-        if (m_settingsDialog->isDarkMode())
-             ui->stereoButton->setIcon(QIcon(":/images/stereo-off.svg"));
-        else ui->stereoButton->setIcon(QIcon(":/images/stereo-on.svg"));
-        ui->stereoButton->setStatusTip(tr("Sound is stereo"));
+        m_stereoLabel->setText("Stereo");
     }
     else if (txt.contains("no/lost stereo signal")) {
-        // lost
-        if (m_settingsDialog->isDarkMode())
-             ui->stereoButton->setIcon(QIcon(":/images/stereo-on.svg"));
-        else ui->stereoButton->setIcon(QIcon(":/images/stereo-off.svg"));
-        ui->stereoButton->setStatusTip(tr("Sound is not stereo"));
+        m_stereoLabel->setText("Mono");
     }
 }
 
@@ -527,3 +518,14 @@ FreqDescMap MainWindow::tableData() const
 {
     return QSettings().value("MainWindow/freqDescMap").value<FreqDescMap>();
 }
+
+void MainWindow::on_stereoButton_toggled(bool checked)
+{
+    if (checked)
+         ui->stereoButton->setIcon(QIcon(":/images/stereo.svg"));
+    else ui->stereoButton->setIcon(QIcon(":/images/mono.svg"));
+
+    m_settingsDialog->setIsStereo(checked);
+    changeFreq();
+}
+

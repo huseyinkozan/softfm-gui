@@ -59,6 +59,8 @@ private slots:
 
 
 
+    void on_stereoButton_toggled(bool checked);
+
 private:
     void applyDarkMode();
     bool isRadioOn() const;
@@ -68,6 +70,7 @@ private:
 
 private:
     Ui::MainWindow *ui;
+    QLabel * m_stereoLabel = nullptr;
     QLabel * m_versionLabel = nullptr;
     QProcess * m_process = nullptr;
     SettingsDialog * m_settingsDialog = nullptr;
