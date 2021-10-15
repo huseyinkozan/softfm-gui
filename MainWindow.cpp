@@ -38,14 +38,25 @@ MainWindow::MainWindow(QWidget *parent)
     logDockAction->setStatusTip(tr("Show Log"));
     ui->toolBar->insertAction(ui->actionExit, logDockAction);
 
-    QTextDocument * logDoc = ui->logTextEdit->document();
-    if (logDoc)
-        logDoc->setMaximumBlockCount(1000);
-
     QWidget * exp1 = new QWidget(this);
     exp1->setObjectName("exp1");
     exp1->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
     ui->toolBar->insertWidget(ui->actionSettings, exp1);
+
+    QList<QAction*> actionList = ui->toolBar->actions();
+    for (int i = 0; i < actionList.count(); ++i) {
+        QAction * a = actionList.at(i);
+        QWidget * w = ui->toolBar->widgetForAction(a);
+        if ( ! w) continue;
+        QToolButton * tb = qobject_cast<QToolButton*>(w);
+        if ( ! tb) continue;
+        tb->setMinimumWidth(70);
+        tb->setAutoRaise(true);
+    }
+
+    QTextDocument * logDoc = ui->logTextEdit->document();
+    if (logDoc)
+        logDoc->setMaximumBlockCount(1000);
 
     m_stereoLabel = new QLabel("");
     m_stereoLabel->setObjectName("m_stereoLabel");
