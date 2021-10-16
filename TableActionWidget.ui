@@ -41,6 +41,9 @@
    </item>
    <item>
     <widget class="QToolButton" name="removeButton">
+     <property name="statusTip">
+      <string>Delete channel</string>
+     </property>
      <property name="text">
       <string/>
      </property>

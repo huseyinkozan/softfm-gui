@@ -24,12 +24,16 @@ DEFINES += APP_VER=\\\"$$APP_VER\\\"
 
 
 SOURCES += \
+    ChannelRecord.cpp \
+    CheckBoxDelegate.cpp \
     SettingsDialog.cpp \
     TableActionWidget.cpp \
     main.cpp \
     MainWindow.cpp
 
 HEADERS += \
+    ChannelRecord.h \
+    CheckBoxDelegate.h \
     MainWindow.h \
     SettingsDialog.h \
     TableActionWidget.h \

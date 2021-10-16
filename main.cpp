@@ -4,7 +4,9 @@
 #include <QLocale>
 #include <QtSingleApplication>
 #include <QTranslator>
+#include <QDebug>
 #include "main.h"
+#include "ChannelRecord.h"
 
 
 int main(int argc, char *argv[])
@@ -20,8 +22,7 @@ int main(int argc, char *argv[])
     a.setAttribute(Qt::AA_UseHighDpiPixmaps);
     a.setQuitOnLastWindowClosed(false);
 
-    qRegisterMetaType<FreqDescMap>("FreqDescMap");
-    qRegisterMetaTypeStreamOperators<FreqDescMap>("FreqDescMap");
+    ChannelRecord::registerTypes();
 
     QCommandLineParser parser;
     parser.addHelpOption();

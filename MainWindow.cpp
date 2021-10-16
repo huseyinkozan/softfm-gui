@@ -11,11 +11,13 @@
 
 #include "SettingsDialog.h"
 #include "TableActionWidget.h"
+#include "CheckBoxDelegate.h"
 
 
 enum Columns {
     Column_Freq = 0,
     Column_Desc,
+    Column_Tray,
     Column_Act,
     Column__Max_
 };
@@ -23,7 +25,8 @@ enum Columns {
 enum TableTypes {
     TableType_Freq = QTableWidgetItem::UserType +  1,
     TableType_Desc = QTableWidgetItem::UserType +  2,
-    TableType_Act  = QTableWidgetItem::UserType +  3,
+    TableType_Tray = QTableWidgetItem::UserType +  3,
+    TableType_Act  = QTableWidgetItem::UserType +  4,
 };
 
 MainWindow::MainWindow(QWidget *parent)
@@ -74,6 +77,7 @@ MainWindow::MainWindow(QWidget *parent)
     QStringList headerList = QStringList()
             << tr("Freq")
             << tr("Desc")
+            << tr("Tray")
             << tr("Act")
                ;
     Q_ASSERT(headerList.count() == Column__Max_);
@@ -83,11 +87,18 @@ MainWindow::MainWindow(QWidget *parent)
     Q_CHECK_PTR(hv);
     hv->setSectionResizeMode(Column_Freq, QHeaderView::Interactive);
     hv->setSectionResizeMode(Column_Desc, QHeaderView::Stretch);
+    hv->setSectionResizeMode(Column_Tray, QHeaderView::Fixed);
     hv->setSectionResizeMode(Column_Act,  QHeaderView::Fixed);
+    hv->resizeSection(Column_Tray, 40);
     hv->resizeSection(Column_Act, 40);
     ui->tableWidget->horizontalHeaderItem(Column_Freq)->setStatusTip(tr("Frequency"));
     ui->tableWidget->horizontalHeaderItem(Column_Desc)->setStatusTip(tr("Description"));
+    ui->tableWidget->horizontalHeaderItem(Column_Tray)->setStatusTip(tr("Show at tray"));
     ui->tableWidget->horizontalHeaderItem(Column_Act )->setStatusTip(tr("Action"));
+
+    CheckBoxDelegate * trayColItemDlg = new CheckBoxDelegate(this);
+    trayColItemDlg->setLabelText(tr("Show"));
+    ui->tableWidget->setItemDelegateForColumn(Column_Tray, trayColItemDlg);
 
     m_process = new QProcess(this);
 //    m_process->setProcessChannelMode(QProcess::MergedChannels);
@@ -101,15 +112,17 @@ MainWindow::MainWindow(QWidget *parent)
     m_settingsDialog->setObjectName("m_settingsDialog");
     connect(m_settingsDialog, &SettingsDialog::finished, this, &MainWindow::settingsDialogFinished);
 
-    QAction * exitAction = new QAction(tr("&Exit"), this);
-    connect(exitAction, &QAction::triggered, qApp, &QCoreApplication::quit);
-    QMenu * trayIconMenu = new QMenu(this);
-    trayIconMenu->addAction(exitAction);
+
+
     m_trayIcon = new QSystemTrayIcon(this);
-    m_trayIcon->setContextMenu(trayIconMenu);
+    m_trayIcon->setObjectName("m_trayIcon");
     m_trayIcon->setIcon(QIcon(":/images/tray-icon.svg"));
     m_trayIcon->show();
     connect(m_trayIcon, &QSystemTrayIcon::activated, this, &MainWindow::trayIconActivated);
+
+    m_trayIconMenu = new QMenu(this);
+    m_trayIcon->setContextMenu(m_trayIconMenu);
+    fillTrayIconMenu();
 
     m_changeFreqTimer = new QTimer(this);
     m_changeFreqTimer->setSingleShot(true);
@@ -325,25 +338,30 @@ void MainWindow::on_clearButton_clicked()
 
 void MainWindow::fillTable()
 {
-    const FreqDescMap fdMap = tableData();
-    const QList<double> freqs = fdMap.keys();
+    m_crMap = getChannelRecordMap();
+    const QList<double> freqs = m_crMap.keys();
     ui->tableWidget->setRowCount(freqs.count());
     int selectedRow = -1;
     for (int i = 0; i < freqs.count(); ++i) {
         const double freq = freqs.at(i);
-        const QString desc = fdMap.value(freq);
+        const ChannelRecord cr = m_crMap.value(freq);
         if (qFuzzyCompare(m_freq, freq))
             selectedRow = i;
         QTableWidgetItem * freqItem = new QTableWidgetItem(TableType_Freq);
         QTableWidgetItem * descItem = new QTableWidgetItem(TableType_Desc);
+        QTableWidgetItem * trayItem = new QTableWidgetItem(TableType_Tray);
         TableActionWidget * taw = new TableActionWidget;
         freqItem->setData(Qt::DisplayRole, QVariant::fromValue(freq));
-        descItem->setText(desc);
+        descItem->setText(cr.desc);
+        trayItem->setData(Qt::DisplayRole, QVariant::fromValue(cr.showAtTray));
         taw->setFreq(freq);
+        freqItem->setFlags(freqItem->flags() ^ Qt::ItemIsEditable);
         freqItem->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
         descItem->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+        trayItem->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
         ui->tableWidget->setItem(i, Column_Freq, freqItem);
         ui->tableWidget->setItem(i, Column_Desc, descItem);
+        ui->tableWidget->setItem(i, Column_Tray, trayItem);
         ui->tableWidget->setCellWidget(i, Column_Act, taw);
         connect(taw, &TableActionWidget::remove, this, &MainWindow::tableActionRemove);
     }
@@ -355,14 +373,15 @@ void MainWindow::fillTable()
         if (selection && selection->hasSelection())
             selection->clear();
     }
+
+    fillTrayIconMenu();
 }
 
 void MainWindow::tableActionRemove(double freq)
 {
-    FreqDescMap fdMap = tableData();
-    if (fdMap.contains(freq))
-        fdMap.remove(freq);
-    QSettings().setValue("MainWindow/freqDescMap", QVariant::fromValue(fdMap));
+    if (m_crMap.contains(freq))
+        m_crMap.remove(freq);
+    setChannelRecordMap(m_crMap);
     QTimer::singleShot(0, this, &MainWindow::fillTable);
 }
 
@@ -375,9 +394,9 @@ void MainWindow::on_addButton_clicked()
     if ( ! ok)
         return;
     const double freq = ui->freqDoubleSpinBox->value();
-    FreqDescMap fdMap = tableData();
-    fdMap[freq] = desc;
-    QSettings().setValue("MainWindow/freqDescMap", QVariant::fromValue(fdMap));
+    ChannelRecord cr(freq, true, desc);
+    m_crMap[freq] = cr;
+    setChannelRecordMap(m_crMap);
     QTimer::singleShot(0, this, &MainWindow::fillTable);
 }
 
@@ -389,6 +408,8 @@ void MainWindow::selectTableRow(double freq)
     if (selection->hasSelection())
         selection->clear();
 
+    updateTrayIconActionChecks();
+
     for (int i = 0; i < ui->tableWidget->rowCount(); ++i) {
         QTableWidgetItem * freqItem = ui->tableWidget->item(i, Column_Freq);
         if ( ! freqItem) continue;
@@ -397,6 +418,7 @@ void MainWindow::selectTableRow(double freq)
         if ( ! ok) continue;
         if (qFuzzyCompare(itemFreq, freq)) {
             ui->tableWidget->selectRow(i);
+            updateTrayIconActionChecks();
             break;
         }
     }
@@ -420,6 +442,57 @@ void MainWindow::on_tableWidget_itemSelectionChanged()
     ui->freqDoubleSpinBox->setValue(itemFreq);
 }
 
+void MainWindow::on_tableWidget_itemChanged(QTableWidgetItem *item)
+{
+    if (item->column() < 0 || item->column() >= Column__Max_) {
+        return;
+    }
+
+    const int row = item->row();
+
+    QTableWidgetItem * freqItem = ui->tableWidget->item(row, Column_Freq);
+    if ( ! freqItem) {
+        return;
+    }
+    bool ok = false;
+    const double itemFreq = freqItem->data(Qt::DisplayRole).toDouble(&ok);
+    if ( ! ok) {
+        return;
+    }
+    if ( ! m_crMap.contains(itemFreq)) {
+        return;
+    }
+
+    bool changed = false;
+
+    const Columns col = (Columns) item->column();
+    switch (col) {
+    case Column_Desc: {
+        const QString desc = item->data(Qt::DisplayRole).toString();
+        if (m_crMap[ itemFreq ].desc != desc) {
+            m_crMap[ itemFreq ].desc = desc;
+            changed = true;
+        }
+        break;
+    }
+    case Column_Tray: {
+        const bool showAtTray = item->data(Qt::DisplayRole).toBool();
+        if (m_crMap[ itemFreq ].showAtTray != showAtTray) {
+            m_crMap[ itemFreq ].showAtTray = showAtTray;
+            changed = true;
+        }
+        break;
+    }
+    default:
+        break;
+    }
+
+    if (changed) {
+        setChannelRecordMap(m_crMap);
+        QTimer::singleShot(0, this, &MainWindow::fillTable);
+    }
+}
+
 void MainWindow::trayIconActivated(QSystemTrayIcon::ActivationReason reason)
 {
     switch (reason) {
@@ -440,6 +513,69 @@ void MainWindow::trayIconActivated(QSystemTrayIcon::ActivationReason reason)
     default:
         ;
     }
+}
+
+void MainWindow::trayIconActionTriggered(bool checked)
+{
+    Q_UNUSED(checked);
+    QAction * a = qobject_cast<QAction*>(sender());
+    if ( ! a) return;
+    bool ok = false;
+    const double freq = a->data().toDouble(&ok);
+    if ( ! ok) return;
+
+    ui->freqDoubleSpinBox->setValue(freq);
+}
+
+void MainWindow::fillTrayIconMenu()
+{
+    m_trayIconMenu->clear();
+
+    const QList<double> freqs = m_crMap.keys();
+    for (int i = 0; i < freqs.count(); ++i) {
+        const double freq = freqs.at(i);
+        const ChannelRecord cr = m_crMap.value(freq);
+        if ( ! cr.showAtTray) continue;
+        QAction * a = m_trayIconMenu->addAction(QString("%1 : %2")
+                                                .arg(freq, 0, 'f', 1)
+                                                .arg(cr.desc));
+        a->setCheckable(true);
+        a->setData(QVariant::fromValue(freq));
+        connect(a, &QAction::triggered, this, &MainWindow::trayIconActionTriggered);
+    }
+
+    m_trayIconMenu->addSeparator();
+
+    QAction * exitAction = m_trayIconMenu->addAction(tr("Exit"));
+    connect(exitAction, &QAction::triggered, qApp, &QCoreApplication::quit);
+
+    updateTrayIconActionChecks();
+}
+
+void MainWindow::updateTrayIconActionChecks()
+{
+    int row = -1;
+    QItemSelectionModel * selection = ui->tableWidget->selectionModel();
+    if (selection->hasSelection()) {
+        row = selection->selectedRows().first().row();
+    }
+
+    QList<QAction*> list = m_trayIconMenu->actions();
+    for (int i = 0; i < list.count(); ++i) {
+        QAction * a = list.at(i);
+        if ( ! a->isCheckable()) continue;
+        a->setChecked(row == i);
+    }
+}
+
+void MainWindow::on_stereoButton_toggled(bool checked)
+{
+    if (checked)
+         ui->stereoButton->setIcon(QIcon(":/images/stereo.svg"));
+    else ui->stereoButton->setIcon(QIcon(":/images/mono.svg"));
+
+    m_settingsDialog->setIsStereo(checked);
+    changeFreq();
 }
 
 void MainWindow::applyDarkMode()
@@ -525,18 +661,12 @@ void MainWindow::captureEvents(const QString &txt)
     }
 }
 
-FreqDescMap MainWindow::tableData() const
+ChannelRecordMap MainWindow::getChannelRecordMap() const
 {
-    return QSettings().value("MainWindow/freqDescMap").value<FreqDescMap>();
+    return QSettings().value("MainWindow/channelRecordMap").value<ChannelRecordMap>();
 }
 
-void MainWindow::on_stereoButton_toggled(bool checked)
+void MainWindow::setChannelRecordMap(const ChannelRecordMap &crMap)
 {
-    if (checked)
-         ui->stereoButton->setIcon(QIcon(":/images/stereo.svg"));
-    else ui->stereoButton->setIcon(QIcon(":/images/mono.svg"));
-
-    m_settingsDialog->setIsStereo(checked);
-    changeFreq();
+    QSettings().setValue("MainWindow/channelRecordMap", QVariant::fromValue(crMap));
 }
-

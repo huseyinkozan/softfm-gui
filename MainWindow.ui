@@ -53,6 +53,12 @@
       </item>
       <item>
        <widget class="QDoubleSpinBox" name="freqDoubleSpinBox">
+        <property name="font">
+         <font>
+          <family>Monospace</family>
+          <pointsize>22</pointsize>
+         </font>
+        </property>
         <property name="wrapping">
          <bool>true</bool>
         </property>
@@ -81,7 +87,7 @@
          <double>0.100000000000000</double>
         </property>
         <property name="stepType">
-         <enum>QAbstractSpinBox::AdaptiveDecimalStepType</enum>
+         <enum>QAbstractSpinBox::DefaultStepType</enum>
         </property>
         <property name="value">
          <double>88.799999999999997</double>
@@ -122,9 +128,6 @@
      <layout class="QHBoxLayout" name="horizontalLayout_2">
       <item>
        <widget class="QTableWidget" name="tableWidget">
-        <property name="editTriggers">
-         <set>QAbstractItemView::NoEditTriggers</set>
-        </property>
         <property name="alternatingRowColors">
          <bool>true</bool>
         </property>

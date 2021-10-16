@@ -5,8 +5,11 @@
 #include <QProcess>
 #include <QSystemTrayIcon>
 #include "main.h"
+#include "ChannelRecord.h"
 
 QT_BEGIN_NAMESPACE
+
+class QTableWidgetItem;
 namespace Ui { class MainWindow; }
 class QLabel;
 QT_END_NAMESPACE
@@ -54,19 +57,24 @@ private slots:
     void on_addButton_clicked();
     void selectTableRow(double freq);
     void on_tableWidget_itemSelectionChanged();
+    void on_tableWidget_itemChanged(QTableWidgetItem *item);
 
     void trayIconActivated(QSystemTrayIcon::ActivationReason reason);
-
-
+    void trayIconActionTriggered(bool checked);
+    void fillTrayIconMenu();
+    void updateTrayIconActionChecks();
 
     void on_stereoButton_toggled(bool checked);
+
 
 private:
     void applyDarkMode();
     bool isRadioOn() const;
     void updateAdvancedModeFields(const QString & txt);
     void captureEvents(const QString & txt);
-    FreqDescMap tableData() const;
+
+    ChannelRecordMap getChannelRecordMap() const;
+    void setChannelRecordMap(const ChannelRecordMap & crMap);
 
 private:
     Ui::MainWindow *ui;
@@ -77,6 +85,8 @@ private:
     bool m_isOnRequested = false;
     double m_freq = 0.0;
     QSystemTrayIcon * m_trayIcon = nullptr;
+    QMenu * m_trayIconMenu = nullptr;
     QTimer * m_changeFreqTimer = nullptr;
+    ChannelRecordMap m_crMap;
 };
 #endif // MAINWINDOW_H
