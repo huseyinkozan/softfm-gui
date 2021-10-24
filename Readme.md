@@ -6,22 +6,16 @@ Tested with `dev` branch of https://github.com/hayguen/ngsoftfm
 
 ## Screenshots
 
-Basic:
 
-![screenshot-basic](docs/screenshot-basic.png)
+| *Basic* | *Dark* |
+|:--:|:--:| 
+| ![screenshot-basic](docs/screenshot-basic.png) | ![screenshot-dark](docs/screenshot-dark.png) | 
 
-Dark:
 
-![screenshot-dark](docs/screenshot-dark.png)
+| *Advanced* | *Settings* |
+|:--:|:--:| 
+| ![screenshot-advanced](docs/screenshot-advanced.png) | ![screenshot-settings](docs/screenshot-settings.png) |
 
-Advanced:
-
-![screenshot-advanced](docs/screenshot-advanced.png)
-
-Tray:
-
-![screenshot-tray](docs/screenshot-tray.png)
-
-Settings:
-
-![screenshot-settings](docs/screenshot-settings.png)
+| *Tray* |
+|:--:|
+| ![screenshot-tray](docs/screenshot-tray.png) |

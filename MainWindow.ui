@@ -26,7 +26,7 @@
       <item>
        <widget class="QToolButton" name="stereoButton">
         <property name="statusTip">
-         <string>Stereo</string>
+         <string>Use stereo if possible</string>
         </property>
         <property name="text">
          <string/>
