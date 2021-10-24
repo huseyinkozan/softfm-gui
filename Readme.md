@@ -18,4 +18,10 @@ Advanced:
 
 ![screenshot-advanced](docs/screenshot-advanced.png)
 
+Tray:
 
+![screenshot-tray](docs/screenshot-tray.png)
+
+Settings:
+
+![screenshot-settings](docs/screenshot-settings.png)
