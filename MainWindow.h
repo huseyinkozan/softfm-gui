@@ -43,6 +43,7 @@ private slots:
     void settingsDialogFinished(int result);
     void on_actionSettings_triggered();
 
+    void stopProcess();
     void radioOff();
     void radioOn();
     void changeFreq();

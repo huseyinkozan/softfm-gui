@@ -115,7 +115,6 @@ MainWindow::MainWindow(QWidget *parent)
     ui->tableWidget->setItemDelegateForColumn(Column_Tray, trayColItemDlg);
 
     m_process = new QProcess(this);
-//    m_process->setProcessChannelMode(QProcess::MergedChannels);
     connect(m_process, QOverload<int, QProcess::ExitStatus>::of(&QProcess::finished), this, &MainWindow::processFinished);
     connect(m_process, &QProcess::stateChanged,                                       this, &MainWindow::processStateChanged);
     connect(m_process, &QProcess::readyReadStandardError,                             this, &MainWindow::processReadyReadStandardError);
@@ -154,11 +153,6 @@ MainWindow::~MainWindow()
 {
     m_isOnRequested = false;
     radioOff();
-
-    m_process->waitForFinished(3000);
-
-    if (m_process->state() != QProcess::NotRunning)
-        m_process->kill();
 
     delete ui;
 }
@@ -254,8 +248,7 @@ void MainWindow::settingsDialogFinished(int result)
 {
     if (result != SettingsDialog::Accepted)
         return;
-    if (m_process->state() != QProcess::NotRunning)
-        m_process->terminate();
+    stopProcess();
     m_process->setProgram(m_settingsDialog->softfm());
     ui->stereoButton->setChecked(m_settingsDialog->isStereo());
     radioOn();
@@ -268,10 +261,20 @@ void MainWindow::on_actionSettings_triggered()
     m_settingsDialog->open();
 }
 
-void MainWindow::radioOff()
+void MainWindow::stopProcess()
 {
     if (m_process->state() != QProcess::NotRunning)
         m_process->terminate();
+
+    m_process->waitForFinished(300);
+
+    if (m_process->state() != QProcess::NotRunning)
+        m_process->kill();
+}
+
+void MainWindow::radioOff()
+{
+    stopProcess();
 
     if (m_isOnRequested)
         radioOn();
