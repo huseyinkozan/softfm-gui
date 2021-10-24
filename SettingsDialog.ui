@@ -118,11 +118,6 @@
           <string notr="true">rtlsdr</string>
          </property>
         </item>
-        <item>
-         <property name="text">
-          <string>wave</string>
-         </property>
-        </item>
        </widget>
       </item>
       <item row="4" column="0">

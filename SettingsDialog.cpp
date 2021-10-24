@@ -50,15 +50,12 @@ QString SettingsDialog::customConf() const
 QStringList SettingsDialog::commandArgs(double freq, bool forPreview) const
 {
     const quint64 freqInt = freq * 1000000;
-    const bool isAdv = forPreview ? ui->advancedModeCheckBox->isChecked() : isAdvancedMode();
     const QString dt = forPreview ? ui->deviceTypeComboBox->currentText() : deviceType();
     const QString ca = forPreview ? ui->customArgsLineEdit->text()        : customArgs();
     const QString cc = forPreview ? ui->customConfLineEdit->text()        : customConf();
     const bool isSte = isStereo();
 
     QStringList args;
-    if ( ! isAdv)
-        args << "-q";
     if ( ! isSte)
         args << "-M";
     args << "-t" << dt;
