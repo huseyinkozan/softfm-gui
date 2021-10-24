@@ -29,6 +29,17 @@ enum TableTypes {
     TableType_Act  = QTableWidgetItem::UserType +  4,
 };
 
+class FreqItemDelegate : public QStyledItemDelegate {
+public:
+    FreqItemDelegate(QObject * parent) : QStyledItemDelegate(parent) {}
+    QString displayText(const QVariant &value, const QLocale &locale) const {
+        if (value.userType() == QVariant::Double)
+            return locale.toString(value.toDouble(), 'f', 1);
+        return QStyledItemDelegate::displayText(value, locale);
+    }
+};
+
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -95,6 +106,9 @@ MainWindow::MainWindow(QWidget *parent)
     ui->tableWidget->horizontalHeaderItem(Column_Desc)->setStatusTip(tr("Description"));
     ui->tableWidget->horizontalHeaderItem(Column_Tray)->setStatusTip(tr("Show at tray"));
     ui->tableWidget->horizontalHeaderItem(Column_Act )->setStatusTip(tr("Action"));
+
+    FreqItemDelegate * freqColItemDlg = new FreqItemDelegate(this);
+    ui->tableWidget->setItemDelegateForColumn(Column_Freq, freqColItemDlg);
 
     CheckBoxDelegate * trayColItemDlg = new CheckBoxDelegate(this);
     trayColItemDlg->setLabelText(tr("Show"));
@@ -356,9 +370,9 @@ void MainWindow::fillTable()
         trayItem->setData(Qt::DisplayRole, QVariant::fromValue(cr.showAtTray));
         taw->setFreq(freq);
         freqItem->setFlags(freqItem->flags() ^ Qt::ItemIsEditable);
-        freqItem->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-        descItem->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-        trayItem->setTextAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+        freqItem->setTextAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+        descItem->setTextAlignment(Qt::AlignLeft    | Qt::AlignVCenter);
+        trayItem->setTextAlignment(Qt::AlignLeft    | Qt::AlignVCenter);
         ui->tableWidget->setItem(i, Column_Freq, freqItem);
         ui->tableWidget->setItem(i, Column_Desc, descItem);
         ui->tableWidget->setItem(i, Column_Tray, trayItem);
