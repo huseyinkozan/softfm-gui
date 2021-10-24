@@ -19,6 +19,8 @@ public:
     QString deviceType() const;
     bool isAdvancedMode() const;
     bool isDarkMode() const;
+    QString customArgs() const;
+    QString customConf() const;
     QStringList commandArgs(double freq, bool forPreview = false) const;
 
     bool isStereo() const;
@@ -34,6 +36,8 @@ private slots:
 
     void on_advancedModeCheckBox_clicked();
     void on_deviceTypeComboBox_currentIndexChanged(int);
+    void on_customArgsLineEdit_textChanged(const QString &);
+    void on_customConfLineEdit_textChanged(const QString &);
 
 private:
     void updateCommandPreview();

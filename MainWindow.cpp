@@ -254,11 +254,13 @@ void MainWindow::settingsDialogFinished(int result)
 {
     if (result != SettingsDialog::Accepted)
         return;
+    if (m_process->state() != QProcess::NotRunning)
+        m_process->terminate();
     m_process->setProgram(m_settingsDialog->softfm());
-    ui->advancedFrame->setVisible(m_settingsDialog->isAdvancedMode());
-    applyDarkMode();
     ui->stereoButton->setChecked(m_settingsDialog->isStereo());
     radioOn();
+    ui->advancedFrame->setVisible(m_settingsDialog->isAdvancedMode());
+    applyDarkMode();
 }
 
 void MainWindow::on_actionSettings_triggered()
