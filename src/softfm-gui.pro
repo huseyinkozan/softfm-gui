@@ -1,3 +1,8 @@
+# suppress library warnings
+QMAKE_CXXFLAGS += -isystem $(QTDIR)/include
+
+
+
 QT += core gui widgets
 
 CONFIG += c++11
