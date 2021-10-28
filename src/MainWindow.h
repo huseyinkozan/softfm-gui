@@ -42,6 +42,7 @@ private slots:
     void on_actionExit_triggered();
     void settingsDialogFinished(int result);
     void on_actionSettings_triggered();
+    void on_actionPreview_triggered(bool checked);
 
     void stopProcess();
     void radioOff();
@@ -59,6 +60,7 @@ private slots:
     void selectTableRow(double freq);
     void on_tableWidget_itemSelectionChanged();
     void on_tableWidget_itemChanged(QTableWidgetItem *item);
+    void previewTimerTimeout();
 
     void trayIconActivated(QSystemTrayIcon::ActivationReason reason);
     void trayIconActionTriggered(bool checked);
@@ -66,7 +68,6 @@ private slots:
     void updateTrayIconActionChecks();
 
     void on_stereoButton_toggled(bool checked);
-
 
 private:
     void applyDarkMode();
@@ -89,6 +90,7 @@ private:
     QSystemTrayIcon * m_trayIcon = nullptr;
     QMenu * m_trayIconMenu = nullptr;
     QTimer * m_changeFreqTimer = nullptr;
+    QTimer * m_previewTimer = nullptr;
     ChannelRecordMap m_crMap;
 };
 #endif // MAINWINDOW_H

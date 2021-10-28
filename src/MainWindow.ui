@@ -384,6 +384,7 @@
     <bool>false</bool>
    </attribute>
    <addaction name="actionOn"/>
+   <addaction name="actionPreview"/>
    <addaction name="actionSettings"/>
    <addaction name="actionExit"/>
   </widget>
@@ -430,6 +431,18 @@
    </property>
    <property name="shortcut">
     <string>F5</string>
+   </property>
+  </action>
+  <action name="actionPreview">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resources/images/images.qrc">
+     <normaloff>:/images/preview.svg</normaloff>:/images/preview.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Preview</string>
    </property>
   </action>
  </widget>

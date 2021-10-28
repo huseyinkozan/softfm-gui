@@ -28,5 +28,6 @@
         <file>exit.svg</file>
         <file>mono.svg</file>
         <file>stereo.svg</file>
+        <file>preview.svg</file>
     </qresource>
 </RCC>

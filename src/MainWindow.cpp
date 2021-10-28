@@ -138,8 +138,14 @@ MainWindow::MainWindow(QWidget *parent)
     fillTrayIconMenu();
 
     m_changeFreqTimer = new QTimer(this);
+    m_changeFreqTimer->setObjectName("m_changeFreqTimer");
     m_changeFreqTimer->setSingleShot(true);
     connect(m_changeFreqTimer, &QTimer::timeout, this, &MainWindow::changeFreq);
+
+    m_previewTimer = new QTimer(this);
+    m_previewTimer->setObjectName("m_previewTimer");
+    m_previewTimer->setSingleShot(false);
+    connect(m_previewTimer, &QTimer::timeout, this, &MainWindow::previewTimerTimeout);
 
     readSettings();
 
@@ -261,6 +267,24 @@ void MainWindow::settingsDialogFinished(int result)
 void MainWindow::on_actionSettings_triggered()
 {
     m_settingsDialog->open();
+}
+
+void MainWindow::on_actionPreview_triggered(bool checked)
+{
+    if ( ! checked) {
+        m_previewTimer->stop();
+        return;
+    }
+    bool ok = false;
+    const int interval = QInputDialog::getInt(
+                this, tr("Start Preview"), tr("Change Interval as msec"),
+                5, 5, INT32_MAX, 1, &ok);
+    if ( ! ok) {
+        ui->actionPreview->setChecked(false);
+        return;
+    }
+    m_previewTimer->setInterval(interval * 1000);
+    m_previewTimer->start();
 }
 
 void MainWindow::stopProcess()
@@ -512,6 +536,20 @@ void MainWindow::on_tableWidget_itemChanged(QTableWidgetItem *item)
         setChannelRecordMap(m_crMap);
         QTimer::singleShot(0, this, &MainWindow::fillTable);
     }
+}
+
+void MainWindow::previewTimerTimeout()
+{
+    if (ui->tableWidget->rowCount() <= 0)
+        return;
+
+    int selectedRow = 0;
+    QItemSelectionModel * selection = ui->tableWidget->selectionModel();
+    if (selection && selection->hasSelection())
+        selectedRow = selection->selectedRows().first().row();
+    selectedRow++;
+    const int nextRow = selectedRow % ui->tableWidget->rowCount();
+    ui->tableWidget->selectRow(nextRow);
 }
 
 void MainWindow::trayIconActivated(QSystemTrayIcon::ActivationReason reason)
