@@ -79,6 +79,7 @@ private:
 
 private:
     Ui::MainWindow *ui;
+    QAction * m_logDockAction = nullptr;
     QLabel * m_stereoLabel = nullptr;
     QLabel * m_versionLabel = nullptr;
     QProcess * m_process = nullptr;

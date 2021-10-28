@@ -46,16 +46,16 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    QAction * logDockAction = ui->logDockWidget->toggleViewAction();
-    logDockAction->setObjectName("logDockAction");
-    logDockAction->setIcon(QIcon(":images/log.svg"));
-    logDockAction->setStatusTip(tr("Show Log"));
-    ui->toolBar->insertAction(ui->actionExit, logDockAction);
+    m_logDockAction = ui->logDockWidget->toggleViewAction();
+    m_logDockAction->setObjectName("logDockAction");
+    m_logDockAction->setIcon(QIcon(":images/log.svg"));
+    m_logDockAction->setStatusTip(tr("Show Log"));
+    ui->toolBar->insertAction(ui->actionExit, m_logDockAction);
 
     QWidget * exp1 = new QWidget(this);
     exp1->setObjectName("exp1");
     exp1->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
-    ui->toolBar->insertWidget(ui->actionSettings, exp1);
+    ui->toolBar->insertWidget(ui->actionExit, exp1);
 
     QList<QAction*> actionList = ui->toolBar->actions();
     for (int i = 0; i < actionList.count(); ++i) {
@@ -253,6 +253,8 @@ void MainWindow::settingsDialogFinished(int result)
     ui->stereoButton->setChecked(m_settingsDialog->isStereo());
     radioOn();
     ui->advancedFrame->setVisible(m_settingsDialog->isAdvancedMode());
+    m_logDockAction->setVisible(m_settingsDialog->isAdvancedMode());
+    ui->logDockWidget->setVisible(m_settingsDialog->isAdvancedMode());
     applyDarkMode();
 }
 

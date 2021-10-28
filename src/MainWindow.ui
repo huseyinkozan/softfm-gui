@@ -182,6 +182,9 @@
         <property name="sortingEnabled">
          <bool>true</bool>
         </property>
+        <attribute name="verticalHeaderVisible">
+         <bool>false</bool>
+        </attribute>
        </widget>
       </item>
       <item>
@@ -381,8 +384,8 @@
     <bool>false</bool>
    </attribute>
    <addaction name="actionOn"/>
-   <addaction name="actionExit"/>
    <addaction name="actionSettings"/>
+   <addaction name="actionExit"/>
   </widget>
   <action name="actionSettings">
    <property name="icon">
