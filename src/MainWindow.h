@@ -61,6 +61,7 @@ private slots:
     void on_tableWidget_itemSelectionChanged();
     void on_tableWidget_itemChanged(QTableWidgetItem *item);
     void previewTimerTimeout();
+    void previewProgressTimerTimeout();
 
     void trayIconActivated(QSystemTrayIcon::ActivationReason reason);
     void trayIconActionTriggered(bool checked);
@@ -91,6 +92,8 @@ private:
     QMenu * m_trayIconMenu = nullptr;
     QTimer * m_changeFreqTimer = nullptr;
     QTimer * m_previewTimer = nullptr;
+    QTimer * m_previewProgressTimer = nullptr;
+    qint64   m_previewChanged = -1;
     ChannelRecordMap m_crMap;
 };
 #endif // MAINWINDOW_H

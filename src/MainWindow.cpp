@@ -2,6 +2,7 @@
 #include "ui_MainWindow.h"
 
 #include <QCloseEvent>
+#include <QDateTime>
 #include <QDebug>
 #include <QInputDialog>
 #include <QLabel>
@@ -147,6 +148,11 @@ MainWindow::MainWindow(QWidget *parent)
     m_previewTimer->setSingleShot(false);
     connect(m_previewTimer, &QTimer::timeout, this, &MainWindow::previewTimerTimeout);
 
+    m_previewProgressTimer = new QTimer(this);
+    m_previewProgressTimer->setObjectName("m_previewProgressTimer");
+    m_previewProgressTimer->setSingleShot(false);
+    connect(m_previewProgressTimer, &QTimer::timeout, this, &MainWindow::previewProgressTimerTimeout);
+
     readSettings();
 
     QTimer::singleShot(0, this, [this]{
@@ -276,15 +282,21 @@ void MainWindow::on_actionPreview_triggered(bool checked)
         return;
     }
     bool ok = false;
-    const int interval = QInputDialog::getInt(
-                this, tr("Start Preview"), tr("Change Interval as msec"),
+    const int sec = QInputDialog::getInt(
+                this, tr("Start Preview"), tr("Change Interval as sec"),
                 5, 5, INT32_MAX, 1, &ok);
+    const int msec = sec * 1000;
     if ( ! ok) {
         ui->actionPreview->setChecked(false);
         return;
     }
-    m_previewTimer->setInterval(interval * 1000);
+
+    m_previewTimer->setInterval(msec);
     m_previewTimer->start();
+
+    m_previewChanged = QDateTime::currentDateTimeUtc().toMSecsSinceEpoch();
+    ui->progressBar->setMaximum(msec);
+    m_previewProgressTimer->start(40);
 }
 
 void MainWindow::stopProcess()
@@ -554,6 +566,35 @@ void MainWindow::previewTimerTimeout()
         ui->tableWidget->scrollToItem(nextItem);
     }
     ui->tableWidget->selectRow(nextRow);
+
+    m_previewChanged = QDateTime::currentDateTimeUtc().toMSecsSinceEpoch();
+    previewProgressTimerTimeout();
+}
+
+void MainWindow::previewProgressTimerTimeout()
+{
+    const int min = ui->progressBar->minimum();
+    const int max = ui->progressBar->maximum();
+
+    if ( ! m_previewTimer->isActive()) {
+        m_previewProgressTimer->stop();
+        m_previewChanged = -1;
+        ui->progressBar->setValue(min);
+        return;
+    }
+    if (m_previewChanged < 0)
+        return;
+    const qint64 now = QDateTime::currentDateTimeUtc().toMSecsSinceEpoch();
+    const qint64 diff = now - m_previewChanged;
+    if (diff < 0) {
+        ui->progressBar->setValue(0);
+        return;
+    }
+    if (diff >= max) {
+        ui->progressBar->setValue(max);
+        return;
+    }
+    ui->progressBar->setValue(diff);
 }
 
 void MainWindow::trayIconActivated(QSystemTrayIcon::ActivationReason reason)
