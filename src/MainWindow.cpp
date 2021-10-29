@@ -549,6 +549,10 @@ void MainWindow::previewTimerTimeout()
         selectedRow = selection->selectedRows().first().row();
     selectedRow++;
     const int nextRow = selectedRow % ui->tableWidget->rowCount();
+    QTableWidgetItem * nextItem = ui->tableWidget->item(nextRow, Column_Freq);
+    if (nextItem) {
+        ui->tableWidget->scrollToItem(nextItem);
+    }
     ui->tableWidget->selectRow(nextRow);
 }
 
