@@ -253,6 +253,7 @@ void MainWindow::processErrorOccurred(QProcess::ProcessError error)
 
 void MainWindow::on_actionExit_triggered()
 {
+    writeSettings();
     qApp->quit();
 }
 
