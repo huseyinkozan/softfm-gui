@@ -29,5 +29,6 @@
         <file>mono.svg</file>
         <file>stereo.svg</file>
         <file>preview.svg</file>
+        <file>list-add.svg</file>
     </qresource>
 </RCC>

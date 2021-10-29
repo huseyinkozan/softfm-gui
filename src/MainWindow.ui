@@ -151,7 +151,7 @@
         </property>
         <property name="icon">
          <iconset resource="resources/images/images.qrc">
-          <normaloff>:/images/add.svg</normaloff>:/images/add.svg</iconset>
+          <normaloff>:/images/list-add.svg</normaloff>:/images/list-add.svg</iconset>
         </property>
         <property name="iconSize">
          <size>
