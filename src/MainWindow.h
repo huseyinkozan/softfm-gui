@@ -44,7 +44,7 @@ private slots:
     void on_actionSettings_triggered();
     void on_actionPreview_triggered(bool checked);
 
-    void stopProcess();
+    void stopProcess(int waitForMsec = 300);
     void radioOff();
     void radioOn();
     void changeFreq();

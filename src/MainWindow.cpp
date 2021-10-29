@@ -164,7 +164,7 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow()
 {
     m_isOnRequested = false;
-    radioOff();
+    stopProcess(1500);
 
     delete ui;
 }
@@ -299,12 +299,12 @@ void MainWindow::on_actionPreview_triggered(bool checked)
     m_previewProgressTimer->start(40);
 }
 
-void MainWindow::stopProcess()
+void MainWindow::stopProcess(int waitForMsec)
 {
     if (m_process->state() != QProcess::NotRunning)
         m_process->terminate();
 
-    m_process->waitForFinished(300);
+    m_process->waitForFinished(waitForMsec);
 
     if (m_process->state() != QProcess::NotRunning)
         m_process->kill();
