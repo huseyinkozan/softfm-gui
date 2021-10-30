@@ -23,7 +23,7 @@ public:
     QString customConf() const;
     QStringList commandArgs(double freq, bool forPreview = false) const;
 
-    bool isStereo() const;
+    bool isMono() const;
     void setIsStereo(bool isStereo);
 
 protected:

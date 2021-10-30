@@ -53,10 +53,10 @@ QStringList SettingsDialog::commandArgs(double freq, bool forPreview) const
     const QString dt = forPreview ? ui->deviceTypeComboBox->currentText() : deviceType();
     const QString ca = forPreview ? ui->customArgsLineEdit->text()        : customArgs();
     const QString cc = forPreview ? ui->customConfLineEdit->text()        : customConf();
-    const bool isSte = isStereo();
+    const bool    im = isMono();
 
     QStringList args;
-    if ( ! isSte)
+    if (im)
         args << "-M";
     args << "-t" << dt;
 
@@ -74,9 +74,9 @@ QStringList SettingsDialog::commandArgs(double freq, bool forPreview) const
     return args;
 }
 
-bool SettingsDialog::isStereo() const
+bool SettingsDialog::isMono() const
 {
-    return QSettings().value("Settings/isStereo", true).toBool();
+    return QSettings().value("Settings/isMono", false).toBool();
 }
 
 void SettingsDialog::setIsStereo(bool isStereo)

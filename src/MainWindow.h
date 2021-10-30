@@ -68,7 +68,7 @@ private slots:
     void fillTrayIconMenu();
     void updateTrayIconActionChecks();
 
-    void on_stereoButton_toggled(bool checked);
+    void on_monoButton_toggled(bool checked);
 
 private:
     void applyDarkMode();

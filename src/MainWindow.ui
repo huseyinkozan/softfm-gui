@@ -24,9 +24,9 @@
     <item>
      <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
-       <widget class="QToolButton" name="stereoButton">
+       <widget class="QToolButton" name="monoButton">
         <property name="statusTip">
-         <string>Use stereo if possible</string>
+         <string>Use mono even if supports stereo</string>
         </property>
         <property name="text">
          <string/>

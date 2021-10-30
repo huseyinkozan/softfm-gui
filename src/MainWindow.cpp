@@ -263,7 +263,7 @@ void MainWindow::settingsDialogFinished(int result)
         return;
     stopProcess();
     m_process->setProgram(m_settingsDialog->softfm());
-    ui->stereoButton->setChecked(m_settingsDialog->isStereo());
+    ui->monoButton->setChecked(m_settingsDialog->isMono());
     radioOn();
     ui->advancedFrame->setVisible(m_settingsDialog->isAdvancedMode());
     m_logDockAction->setVisible(m_settingsDialog->isAdvancedMode());
@@ -673,11 +673,11 @@ void MainWindow::updateTrayIconActionChecks()
     }
 }
 
-void MainWindow::on_stereoButton_toggled(bool checked)
+void MainWindow::on_monoButton_toggled(bool checked)
 {
     if (checked)
-         ui->stereoButton->setIcon(QIcon(":/images/stereo.svg"));
-    else ui->stereoButton->setIcon(QIcon(":/images/mono.svg"));
+         ui->monoButton->setIcon(QIcon(":/images/mono.svg"));
+    else ui->monoButton->setIcon(QIcon(":/images/stereo.svg"));
 
     m_settingsDialog->setIsStereo(checked);
     changeFreq();
