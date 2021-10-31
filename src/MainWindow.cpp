@@ -679,7 +679,7 @@ void MainWindow::on_monoButton_toggled(bool checked)
          ui->monoButton->setIcon(QIcon(":/images/mono.svg"));
     else ui->monoButton->setIcon(QIcon(":/images/stereo.svg"));
 
-    m_settingsDialog->setIsStereo(checked);
+    m_settingsDialog->setIsMono(checked);
     changeFreq();
 }
 

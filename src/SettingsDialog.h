@@ -24,7 +24,7 @@ public:
     QStringList commandArgs(double freq, bool forPreview = false) const;
 
     bool isMono() const;
-    void setIsStereo(bool isStereo);
+    void setIsMono(bool mono);
 
 protected:
     void showEvent(QShowEvent *event);

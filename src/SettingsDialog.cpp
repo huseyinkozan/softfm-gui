@@ -79,9 +79,9 @@ bool SettingsDialog::isMono() const
     return QSettings().value("Settings/isMono", false).toBool();
 }
 
-void SettingsDialog::setIsStereo(bool isStereo)
+void SettingsDialog::setIsMono(bool mono)
 {
-    QSettings().setValue("Settings/isStereo", isStereo);
+    QSettings().setValue("Settings/isMono", mono);
 }
 
 void SettingsDialog::showEvent(QShowEvent *event)
