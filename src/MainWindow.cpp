@@ -660,16 +660,24 @@ void MainWindow::fillTrayIconMenu()
 void MainWindow::updateTrayIconActionChecks()
 {
     int row = -1;
+    double freq = -1.0;
     QItemSelectionModel * selection = ui->tableWidget->selectionModel();
     if (selection->hasSelection()) {
         row = selection->selectedRows().first().row();
+        QTableWidgetItem * freqItem = ui->tableWidget->item(row, Column_Freq);
+        if (freqItem) {
+            bool ok = false;
+            const double itemFreq = freqItem->data(Qt::DisplayRole).toDouble(&ok);
+            if (ok)
+                freq = itemFreq;
+        }
     }
 
     QList<QAction*> list = m_trayIconMenu->actions();
     for (int i = 0; i < list.count(); ++i) {
         QAction * a = list.at(i);
         if ( ! a->isCheckable()) continue;
-        a->setChecked(row == i);
+        a->setChecked(a->data().toDouble() == freq);
     }
 }
 
