@@ -10,9 +10,11 @@
 #include <QTextStream>
 #include <QTimer>
 
+#include "ScanDialog.h"
 #include "SettingsDialog.h"
 #include "TableActionWidget.h"
 #include "CheckBoxDelegate.h"
+#include "FreqItemDelegate.h"
 
 
 enum Columns {
@@ -30,15 +32,6 @@ enum TableTypes {
     TableType_Act  = QTableWidgetItem::UserType +  4,
 };
 
-class FreqItemDelegate : public QStyledItemDelegate {
-public:
-    FreqItemDelegate(QObject * parent) : QStyledItemDelegate(parent) {}
-    QString displayText(const QVariant &value, const QLocale &locale) const {
-        if (value.userType() == QVariant::Double)
-            return locale.toString(value.toDouble(), 'f', 1);
-        return QStyledItemDelegate::displayText(value, locale);
-    }
-};
 
 
 MainWindow::MainWindow(QWidget *parent)
@@ -56,6 +49,7 @@ MainWindow::MainWindow(QWidget *parent)
     QWidget * exp1 = new QWidget(this);
     exp1->setObjectName("exp1");
     exp1->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
+    exp1->setStyleSheet("background-color:transparent");
     ui->toolBar->insertWidget(ui->actionExit, exp1);
 
     QList<QAction*> actionList = ui->toolBar->actions();
@@ -84,7 +78,7 @@ MainWindow::MainWindow(QWidget *parent)
     m_versionLabel->setStatusTip(tr("Version"));
     statusBar()->addPermanentWidget(m_versionLabel);
 
-    m_freq = ui->freqDoubleSpinBox->value();
+    m_freqAsKhs = mhz_to_khz(ui->freqDoubleSpinBox->value());
 
     QStringList headerList = QStringList()
             << tr("Freq")
@@ -121,6 +115,10 @@ MainWindow::MainWindow(QWidget *parent)
     connect(m_process, &QProcess::readyReadStandardError,                             this, &MainWindow::processReadyReadStandardError);
     connect(m_process, &QProcess::readyReadStandardOutput,                            this, &MainWindow::processReadyReadStandardOutput);
     connect(m_process, &QProcess::errorOccurred,                                      this, &MainWindow::processErrorOccurred);
+
+    m_scanDialog = new ScanDialog(this);
+    connect(m_scanDialog, &ScanDialog::changeFreq, this, &MainWindow::scanDialogChangeFreq);
+    connect(m_scanDialog, &ScanDialog::finished,   this, &MainWindow::scanDialogFinished);
 
     m_settingsDialog = new SettingsDialog(this);
     m_settingsDialog->setObjectName("m_settingsDialog");
@@ -223,12 +221,17 @@ void MainWindow::processReadyReadStandardError()
 
     captureEvents(txt);
 
+    AdvancedFields af = getAdvancedFields(txt);
+
+    if (m_isScanning)
+        m_scanDialog->process(af);
+
     if ( ! m_settingsDialog->isAdvancedMode())
         return;
 
     ui->logTextEdit->append(txt);
 
-    updateAdvancedModeFields(txt);
+    updateAdvancedModeFields(af);
 }
 
 void MainWindow::processReadyReadStandardOutput()
@@ -237,12 +240,17 @@ void MainWindow::processReadyReadStandardOutput()
 
     captureEvents(txt);
 
+    AdvancedFields af = getAdvancedFields(txt);
+
+    if (m_isScanning)
+        m_scanDialog->process(af);
+
     if ( ! m_settingsDialog->isAdvancedMode())
         return;
 
     ui->logTextEdit->append(txt);
 
-    updateAdvancedModeFields(txt);
+    updateAdvancedModeFields(af);
 }
 
 void MainWindow::processErrorOccurred(QProcess::ProcessError error)
@@ -300,6 +308,34 @@ void MainWindow::on_actionPreview_triggered(bool checked)
     m_previewProgressTimer->start(40);
 }
 
+void MainWindow::on_actionScan_triggered()
+{
+    m_isScanning = true;
+
+    QWidget * previewWidget = ui->toolBar->widgetForAction(ui->actionPreview);
+    if (previewWidget) {
+        QToolButton * previewButton = qobject_cast<QToolButton*>(previewWidget);
+        if (previewButton && previewButton->isChecked())
+            previewButton->animateClick();
+    }
+    m_scanDialog->setCrMap(getChannelRecordMap());
+    m_scanDialog->open();
+}
+
+void MainWindow::scanDialogChangeFreq(int freqAsKhz)
+{
+    ui->freqDoubleSpinBox->setValue(khz_to_mhz(freqAsKhz));
+}
+
+void MainWindow::scanDialogFinished(int result)
+{
+    m_isScanning = false;
+    if (result != QDialog::Accepted)
+        return;
+    setChannelRecordMap(m_scanDialog->crMap());
+    QTimer::singleShot(0, this, &MainWindow::fillTable);
+}
+
 void MainWindow::stopProcess(int waitForMsec)
 {
     if (m_process->state() != QProcess::NotRunning)
@@ -330,9 +366,9 @@ void MainWindow::radioOn()
         return;
     }
 
-    const double freq = ui->freqDoubleSpinBox->value();
+    const int freqAsKhz = mhz_to_khz(ui->freqDoubleSpinBox->value());
 
-    const QStringList args = m_settingsDialog->commandArgs(freq);
+    const QStringList args = m_settingsDialog->commandArgs(freqAsKhz, m_isScanning);
 
     m_process->setArguments(args);
     m_process->start();
@@ -365,18 +401,24 @@ void MainWindow::on_actionOn_triggered(bool checked)
     if (m_isOnRequested)
          m_trayIcon->setIcon(QIcon(":/images/tray-icon-playing.svg"));
     else m_trayIcon->setIcon(QIcon(":/images/tray-icon.svg"));
+
+    ui->actionPreview->setEnabled(checked);
+    ui->actionScan->setEnabled(checked);
 }
 
 void MainWindow::on_freqDoubleSpinBox_valueChanged(double)
 {
-    const double freq = ui->freqDoubleSpinBox->value();
-    if (m_freq == freq)
+    const double freqAsMhz = ui->freqDoubleSpinBox->value();
+    const int freqAsKhz = mhz_to_khz(freqAsMhz);
+    if (m_freqAsKhs == freqAsKhz)
         return;
-    m_freq = freq;
+    m_freqAsKhs = freqAsKhz;
 
-    selectTableRow(m_freq);
+    selectTableRow(m_freqAsKhs);
 
-    m_changeFreqTimer->start(500);
+    const int to = m_isScanning ? 250 : 500;
+
+    m_changeFreqTimer->start(to);
 }
 
 void MainWindow::on_freqDownButton_clicked()
@@ -397,22 +439,22 @@ void MainWindow::on_clearButton_clicked()
 void MainWindow::fillTable()
 {
     m_crMap = getChannelRecordMap();
-    const QList<double> freqs = m_crMap.keys();
-    ui->tableWidget->setRowCount(freqs.count());
+    const QList<qint32> freqAsKhzList = m_crMap.keys();
+    ui->tableWidget->setRowCount(freqAsKhzList.count());
     int selectedRow = -1;
-    for (int i = 0; i < freqs.count(); ++i) {
-        const double freq = freqs.at(i);
-        const ChannelRecord cr = m_crMap.value(freq);
-        if (qFuzzyCompare(m_freq, freq))
+    for (int i = 0; i < freqAsKhzList.count(); ++i) {
+        const qint32 freqAsKhz = freqAsKhzList.at(i);
+        const ChannelRecord cr = m_crMap.value(freqAsKhz);
+        if (m_freqAsKhs == freqAsKhz)
             selectedRow = i;
         QTableWidgetItem * freqItem = new QTableWidgetItem(TableType_Freq);
         QTableWidgetItem * descItem = new QTableWidgetItem(TableType_Desc);
         QTableWidgetItem * trayItem = new QTableWidgetItem(TableType_Tray);
         TableActionWidget * taw = new TableActionWidget;
-        freqItem->setData(Qt::DisplayRole, QVariant::fromValue(freq));
+        freqItem->setData(Qt::DisplayRole, QVariant::fromValue(freqAsKhz));
         descItem->setText(cr.desc);
         trayItem->setData(Qt::DisplayRole, QVariant::fromValue(cr.showAtTray));
-        taw->setFreq(freq);
+        taw->setFreqAsKhz(freqAsKhz);
         freqItem->setFlags(freqItem->flags() ^ Qt::ItemIsEditable);
         freqItem->setTextAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
         descItem->setTextAlignment(Qt::AlignLeft    | Qt::AlignVCenter);
@@ -435,10 +477,10 @@ void MainWindow::fillTable()
     fillTrayIconMenu();
 }
 
-void MainWindow::tableActionRemove(double freq)
+void MainWindow::tableActionRemove(int freqAsKhz)
 {
-    if (m_crMap.contains(freq))
-        m_crMap.remove(freq);
+    if (m_crMap.contains(freqAsKhz))
+        m_crMap.remove(freqAsKhz);
     setChannelRecordMap(m_crMap);
     QTimer::singleShot(0, this, &MainWindow::fillTable);
 }
@@ -451,14 +493,15 @@ void MainWindow::on_addButton_clicked()
                 QLineEdit::Normal, QString(), &ok);
     if ( ! ok)
         return;
-    const double freq = ui->freqDoubleSpinBox->value();
-    ChannelRecord cr(freq, true, desc);
-    m_crMap[freq] = cr;
+    const double freqAsMhz = ui->freqDoubleSpinBox->value();
+    const int freqAsKhz = mhz_to_khz(freqAsMhz);
+    ChannelRecord cr(freqAsKhz, true, desc);
+    m_crMap[freqAsKhz] = cr;
     setChannelRecordMap(m_crMap);
     QTimer::singleShot(0, this, &MainWindow::fillTable);
 }
 
-void MainWindow::selectTableRow(double freq)
+void MainWindow::selectTableRow(int freqAsKhz)
 {
     QItemSelectionModel * selection = ui->tableWidget->selectionModel();
     if ( ! selection)
@@ -472,9 +515,9 @@ void MainWindow::selectTableRow(double freq)
         QTableWidgetItem * freqItem = ui->tableWidget->item(i, Column_Freq);
         if ( ! freqItem) continue;
         bool ok = false;
-        const double itemFreq = freqItem->data(Qt::DisplayRole).toDouble(&ok);
+        const int itemFreqAsKhz = freqItem->data(Qt::DisplayRole).toInt(&ok);
         if ( ! ok) continue;
-        if (qFuzzyCompare(itemFreq, freq)) {
+        if (itemFreqAsKhz == freqAsKhz) {
             ui->tableWidget->selectRow(i);
             updateTrayIconActionChecks();
             break;
@@ -494,10 +537,10 @@ void MainWindow::on_tableWidget_itemSelectionChanged()
     if ( ! freqItem)
         return;
     bool ok = false;
-    const double itemFreq = freqItem->data(Qt::DisplayRole).toDouble(&ok);
+    const int itemFreqAsKhz = freqItem->data(Qt::DisplayRole).toInt(&ok);
     if ( ! ok)
         return;
-    ui->freqDoubleSpinBox->setValue(itemFreq);
+    ui->freqDoubleSpinBox->setValue(khz_to_mhz(itemFreqAsKhz));
 }
 
 void MainWindow::on_tableWidget_itemChanged(QTableWidgetItem *item)
@@ -513,11 +556,11 @@ void MainWindow::on_tableWidget_itemChanged(QTableWidgetItem *item)
         return;
     }
     bool ok = false;
-    const double itemFreq = freqItem->data(Qt::DisplayRole).toDouble(&ok);
+    const int itemFreqAsKhs = freqItem->data(Qt::DisplayRole).toInt(&ok);
     if ( ! ok) {
         return;
     }
-    if ( ! m_crMap.contains(itemFreq)) {
+    if ( ! m_crMap.contains(itemFreqAsKhs)) {
         return;
     }
 
@@ -527,16 +570,16 @@ void MainWindow::on_tableWidget_itemChanged(QTableWidgetItem *item)
     switch (col) {
     case Column_Desc: {
         const QString desc = item->data(Qt::DisplayRole).toString();
-        if (m_crMap[ itemFreq ].desc != desc) {
-            m_crMap[ itemFreq ].desc = desc;
+        if (m_crMap[ itemFreqAsKhs ].desc != desc) {
+            m_crMap[ itemFreqAsKhs ].desc = desc;
             changed = true;
         }
         break;
     }
     case Column_Tray: {
         const bool showAtTray = item->data(Qt::DisplayRole).toBool();
-        if (m_crMap[ itemFreq ].showAtTray != showAtTray) {
-            m_crMap[ itemFreq ].showAtTray = showAtTray;
+        if (m_crMap[ itemFreqAsKhs ].showAtTray != showAtTray) {
+            m_crMap[ itemFreqAsKhs ].showAtTray = showAtTray;
             changed = true;
         }
         break;
@@ -626,26 +669,26 @@ void MainWindow::trayIconActionTriggered(bool checked)
     QAction * a = qobject_cast<QAction*>(sender());
     if ( ! a) return;
     bool ok = false;
-    const double freq = a->data().toDouble(&ok);
+    const int freqAsKhz = a->data().toInt(&ok);
     if ( ! ok) return;
 
-    ui->freqDoubleSpinBox->setValue(freq);
+    ui->freqDoubleSpinBox->setValue(khz_to_mhz(freqAsKhz));
 }
 
 void MainWindow::fillTrayIconMenu()
 {
     m_trayIconMenu->clear();
 
-    const QList<double> freqs = m_crMap.keys();
-    for (int i = 0; i < freqs.count(); ++i) {
-        const double freq = freqs.at(i);
-        const ChannelRecord cr = m_crMap.value(freq);
+    const QList<qint32> freqAsKhzList = m_crMap.keys();
+    for (int i = 0; i < freqAsKhzList.count(); ++i) {
+        const qint32 freqAsKhz = freqAsKhzList.at(i);
+        const ChannelRecord cr = m_crMap.value(freqAsKhz);
         if ( ! cr.showAtTray) continue;
         QAction * a = m_trayIconMenu->addAction(QString("%1 : %2")
-                                                .arg(freq, 0, 'f', 1)
+                                                .arg(khz_to_mhz(freqAsKhz), 0, 'f', 1)
                                                 .arg(cr.desc));
         a->setCheckable(true);
-        a->setData(QVariant::fromValue(freq));
+        a->setData(QVariant::fromValue(freqAsKhz));
         connect(a, &QAction::triggered, this, &MainWindow::trayIconActionTriggered);
     }
 
@@ -660,16 +703,16 @@ void MainWindow::fillTrayIconMenu()
 void MainWindow::updateTrayIconActionChecks()
 {
     int row = -1;
-    double freq = -1.0;
+    int freqAsKhz = -1;
     QItemSelectionModel * selection = ui->tableWidget->selectionModel();
     if (selection->hasSelection()) {
         row = selection->selectedRows().first().row();
         QTableWidgetItem * freqItem = ui->tableWidget->item(row, Column_Freq);
         if (freqItem) {
             bool ok = false;
-            const double itemFreq = freqItem->data(Qt::DisplayRole).toDouble(&ok);
+            const int itemFreqAsKhz = freqItem->data(Qt::DisplayRole).toInt(&ok);
             if (ok)
-                freq = itemFreq;
+                freqAsKhz = itemFreqAsKhz;
         }
     }
 
@@ -677,7 +720,7 @@ void MainWindow::updateTrayIconActionChecks()
     for (int i = 0; i < list.count(); ++i) {
         QAction * a = list.at(i);
         if ( ! a->isCheckable()) continue;
-        a->setChecked(a->data().toDouble() == freq);
+        a->setChecked(a->data().toInt() == freqAsKhz);
     }
 }
 
@@ -717,45 +760,88 @@ bool MainWindow::isRadioOn() const
     return m_process->state() != QProcess::NotRunning;
 }
 
-void MainWindow::updateAdvancedModeFields(const QString &txt)
+MainWindow::AdvancedFields MainWindow::getAdvancedFields(const QString &txt) const
 {
-    QStringRef ref = QStringRef(&txt).trimmed();
+    AdvancedFields res;
 
-    QLatin1String freqBeginStr("freq=" ), freqEndStr("MHz");
-    QLatin1String ppmBeginStr( "ppm="  ), ppmEndStr("IF=");
-    QLatin1String bbBeginStr(  "BB="   ), bbEndStr("dB");
-    QLatin1String audBeginStr( "audio="), audEndStr("dB");
-    QLatin1String bufBeginStr( "buf="  ), bufEndStr("s");
-    int freqBegin = ref.indexOf(freqBeginStr);
-    int freqEnd   = ref.indexOf(freqEndStr, freqBegin);
-    int ppmBegin  = ref.indexOf(ppmBeginStr);
-    int ppmEnd    = ref.indexOf(ppmEndStr,  ppmBegin);
-    int bbBegin   = ref.indexOf(bbBeginStr);
-    int bbEnd     = ref.indexOf(bbEndStr,   bbBegin);
-    int audBegin  = ref.indexOf(audBeginStr);
-    int audEnd    = ref.indexOf(audEndStr,  audBegin);
-    int bufBegin  = ref.indexOf(bufBeginStr);
-    int bufEnd    = ref.indexOf(bufEndStr,  bufBegin);
-    if (freqBegin < 0 || freqEnd < 0) return;
-    if (ppmBegin  < 0 || ppmEnd  < 0) return;
-    if (bbBegin   < 0 || bbEnd   < 0) return;
-    if (audBegin  < 0 || audEnd  < 0) return;
-    if (bufBegin  < 0 || bufEnd  < 0) return;
-    freqBegin += freqBeginStr.size();
-    ppmBegin  += ppmBeginStr.size();
-    bbBegin   += bbBeginStr.size();
-    audBegin  += audBeginStr.size();
-    bufBegin  += bufBeginStr.size();
-    const double freq = ref.mid(freqBegin, freqEnd - freqBegin).trimmed().toDouble();
-    const double ppm  = ref.mid(ppmBegin,  ppmEnd  - ppmBegin ).trimmed().toDouble();
-    const double bb   = ref.mid(bbBegin,   bbEnd   - bbBegin  ).trimmed().toDouble();
-    const double aud  = ref.mid(audBegin,  audEnd  - audBegin ).trimmed().toDouble();
-    const double buf  = ref.mid(bufBegin,  bufEnd  - bufBegin ).trimmed().toDouble();
-    ui->advFreqDoubleSpinBox->setValue(freq);
-    ui->advPpmDoubleSpinBox->setValue(ppm);
-    ui->advBbDoubleSpinBox->setValue(bb);
-    ui->advAudioDoubleSpinBox->setValue(aud);
-    ui->advBufDoubleSpinBox->setValue(buf);
+    static QLatin1String strBlk ("blk="  );
+    static QLatin1String strFreq("freq=" );
+    static QLatin1String strPpm ("ppm="  );
+    static QLatin1String strIf  ("IF="   );
+    static QLatin1String strBb  ("BB="   );
+    static QLatin1String strAud ("audio=");
+    static QLatin1String strBuf ("buf="  );
+
+    static QLatin1String strMhz ("MHz");
+    static QLatin1String strDb  ("dB");
+    static QLatin1String strSec ("s");
+
+    QStringRef ref(&txt);
+
+    const int idxBlk  = ref.indexOf(strBlk , 0, Qt::CaseSensitive);
+    const int idxFreq = ref.indexOf(strFreq, 0, Qt::CaseSensitive);
+    const int idxPpm  = ref.indexOf(strPpm , 0, Qt::CaseSensitive);
+    const int idxIf   = ref.indexOf(strIf  , 0, Qt::CaseSensitive);
+    const int idxBb   = ref.indexOf(strBb  , 0, Qt::CaseSensitive);
+    const int idxAud  = ref.indexOf(strAud , 0, Qt::CaseSensitive);
+    const int idxBuf  = ref.indexOf(strBuf , 0, Qt::CaseSensitive);
+
+    const int idxMhz  = ref.indexOf(strMhz , idxFreq, Qt::CaseSensitive);
+    const int idxIfDb = ref.indexOf(strDb,   idxIf,   Qt::CaseSensitive);
+    const int idxBbDb = ref.indexOf(strDb,   idxBb,   Qt::CaseSensitive);
+    const int idxAuDb = ref.indexOf(strDb,   idxAud,  Qt::CaseSensitive);
+    const int idxSec  = ref.indexOf(strSec,  idxBuf,  Qt::CaseSensitive);
+
+    if (idxBlk  < 0) return res;
+    if (idxFreq < 0) return res;
+    if (idxPpm  < 0) return res;
+    if (idxIf   < 0) return res;
+    if (idxBb   < 0) return res;
+    if (idxAud  < 0) return res;
+    if (idxBuf  < 0) return res;
+
+    if (idxMhz  < 0) return res;
+    if (idxIfDb < 0) return res;
+    if (idxBbDb < 0) return res;
+    if (idxAuDb < 0) return res;
+    if (idxSec  < 0) return res;
+
+    bool okBlk  = false;
+    bool okFreq = false;
+    bool okPpm  = false;
+    bool okIf   = false;
+    bool okBb   = false;
+    bool okAud  = false;
+    bool okBuf  = false;
+
+    res.blk         = ref.mid(idxBlk  + strBlk .size(), idxFreq - idxBlk  - strBlk .size()).toDouble(&okBlk );
+    res.freqAsMhz   = ref.mid(idxFreq + strFreq.size(), idxMhz  - idxFreq - strFreq.size()).toDouble(&okFreq);
+    res.ppm         = ref.mid(idxPpm  + strPpm .size(), idxIf   - idxPpm  - strPpm .size()).toDouble(&okPpm );
+    res.if_         = ref.mid(idxIf   + strIf  .size(), idxIfDb - idxIf   - strIf  .size()).toDouble(&okIf  );
+    res.bb          = ref.mid(idxBb   + strBb  .size(), idxBbDb - idxBb   - strBb  .size()).toDouble(&okBb  );
+    res.audio       = ref.mid(idxAud  + strAud .size(), idxAuDb - idxAud  - strAud .size()).toDouble(&okAud );
+    res.buf         = ref.mid(idxBuf  + strBuf .size(), idxSec  - idxBuf  - strBuf .size()).toDouble(&okBuf );
+
+    res.isValid =
+            okBlk  &&
+            okFreq &&
+            okPpm  &&
+            okIf   &&
+            okBb   &&
+            okAud  &&
+            okBuf;
+
+    return res;
+}
+
+void MainWindow::updateAdvancedModeFields(const AdvancedFields & af)
+{
+    ui->advFreqDoubleSpinBox->setValue(     af.isValid ? af.freqAsMhz : 0.0);
+    ui->advPpmDoubleSpinBox->setValue(      af.isValid ? af.ppm       : 0.0);
+    ui->advIfDoubleSpinBox->setValue(       af.isValid ? af.if_       : 0.0);
+    ui->advBbDoubleSpinBox->setValue(       af.isValid ? af.bb        : 0.0);
+    ui->advAudioDoubleSpinBox->setValue(    af.isValid ? af.audio     : 0.0);
+    ui->advBufDoubleSpinBox->setValue(      af.isValid ? af.buf       : 0.0);
 }
 
 void MainWindow::captureEvents(const QString &txt)
@@ -776,7 +862,20 @@ void MainWindow::captureEvents(const QString &txt)
 
 ChannelRecordMap MainWindow::getChannelRecordMap() const
 {
-    return QSettings().value("MainWindow/channelRecordMap").value<ChannelRecordMap>();
+    ChannelRecordMap cm = QSettings().value("MainWindow/channelRecordMap")
+            .value<ChannelRecordMap>();
+
+    // upgrade records, if have any old version
+    const QList<qint32> freqAsKhzList = cm.keys();
+    for (int i = 0; i < freqAsKhzList.count(); ++i) {
+        const qint32 freqAsKhz = freqAsKhzList.at(i);
+        if (cm[freqAsKhz].version == 1) {
+            cm[freqAsKhz].version = 2;
+            // freqAsMhz and freqAsKhz will be filled at stream function
+        }
+    }
+
+    return cm;
 }
 
 void MainWindow::setChannelRecordMap(const ChannelRecordMap &crMap)

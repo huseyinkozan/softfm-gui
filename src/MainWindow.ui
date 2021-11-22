@@ -258,6 +258,28 @@
           </widget>
          </item>
          <item>
+          <widget class="QDoubleSpinBox" name="advIfDoubleSpinBox">
+           <property name="readOnly">
+            <bool>true</bool>
+           </property>
+           <property name="prefix">
+            <string>IF </string>
+           </property>
+           <property name="suffix">
+            <string> dB</string>
+           </property>
+           <property name="decimals">
+            <number>1</number>
+           </property>
+           <property name="minimum">
+            <double>-99999999.000000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>99999999.000000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item>
           <widget class="QDoubleSpinBox" name="advBbDoubleSpinBox">
            <property name="readOnly">
             <bool>true</bool>
@@ -267,6 +289,9 @@
            </property>
            <property name="suffix">
             <string> dB</string>
+           </property>
+           <property name="decimals">
+            <number>1</number>
            </property>
            <property name="minimum">
             <double>-99999999.000000000000000</double>
@@ -287,6 +312,9 @@
            <property name="suffix">
             <string> dB</string>
            </property>
+           <property name="decimals">
+            <number>1</number>
+           </property>
            <property name="minimum">
             <double>-99999999.000000000000000</double>
            </property>
@@ -305,6 +333,9 @@
            </property>
            <property name="suffix">
             <string> s</string>
+           </property>
+           <property name="decimals">
+            <number>1</number>
            </property>
            <property name="minimum">
             <double>-99999999.000000000000000</double>
@@ -408,6 +439,7 @@
    </attribute>
    <addaction name="actionOn"/>
    <addaction name="actionPreview"/>
+   <addaction name="actionScan"/>
    <addaction name="actionSettings"/>
    <addaction name="actionExit"/>
   </widget>
@@ -460,12 +492,27 @@
    <property name="checkable">
     <bool>true</bool>
    </property>
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="icon">
     <iconset resource="resources/images/images.qrc">
      <normaloff>:/images/preview.svg</normaloff>:/images/preview.svg</iconset>
    </property>
    <property name="text">
     <string>Preview</string>
+   </property>
+  </action>
+  <action name="actionScan">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resources/images/images.qrc">
+     <normaloff>:/images/actions-scan.svg</normaloff>:/images/actions-scan.svg</iconset>
+   </property>
+   <property name="text">
+    <string>Scan</string>
    </property>
   </action>
  </widget>

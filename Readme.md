@@ -35,6 +35,6 @@ make
 |:--:|:--:| 
 | ![screenshot-advanced](docs/screenshot-advanced.png) | ![screenshot-settings](docs/screenshot-settings.png) |
 
-| *Tray* |
-|:--:|
-| ![screenshot-tray](docs/screenshot-tray.png) |
+| *Tray* | *Scan* |
+|:--:|:--:| 
+| ![screenshot-tray](docs/screenshot-tray.png) | ![screenshot-scan](docs/screenshot-scan.png) |

@@ -31,6 +31,7 @@ DEFINES += APP_VER=\\\"$$APP_VER\\\"
 SOURCES += \
     ChannelRecord.cpp \
     CheckBoxDelegate.cpp \
+    ScanDialog.cpp \
     SettingsDialog.cpp \
     TableActionWidget.cpp \
     main.cpp \
@@ -39,13 +40,17 @@ SOURCES += \
 HEADERS += \
     ChannelRecord.h \
     CheckBoxDelegate.h \
+    FreqItemDelegate.h \
     MainWindow.h \
+    ProgressItemDelegate.h \
+    ScanDialog.h \
     SettingsDialog.h \
     TableActionWidget.h \
     main.h
 
 FORMS += \
     MainWindow.ui \
+    ScanDialog.ui \
     SettingsDialog.ui \
     TableActionWidget.ui
 

@@ -47,9 +47,9 @@ QString SettingsDialog::customConf() const
     return QSettings().value("Settings/customConf", QString()).toString();
 }
 
-QStringList SettingsDialog::commandArgs(double freq, bool forPreview) const
+QStringList SettingsDialog::commandArgs(int freqAsKhz, bool isScanning, bool forPreview) const
 {
-    const quint64 freqInt = freq * 1000000;
+    const quint64 freqHz = freqAsKhz * 1000;
     const QString dt = forPreview ? ui->deviceTypeComboBox->currentText() : deviceType();
     const QString ca = forPreview ? ui->customArgsLineEdit->text()        : customArgs();
     const QString cc = forPreview ? ui->customConfLineEdit->text()        : customConf();
@@ -60,15 +60,23 @@ QStringList SettingsDialog::commandArgs(double freq, bool forPreview) const
         args << "-M";
     args << "-t" << dt;
 
-    QString conf = QString("freq=%1").arg(freqInt);
+    QString conf = QString("freq=%1").arg(freqHz);
     if ( ! cc.trimmed().isEmpty())
         conf.append(',').append(cc);
     args << "-c" << conf;
 
     if ( ! ca.isEmpty()) {
         const QStringList customArgs = ca.trimmed().split(' ', QString::SkipEmptyParts);
-        if ( ! customArgs.isEmpty())
-            args << customArgs;
+        for (int i = 0; i < customArgs.count(); ++i) {
+            const QString & customArg = customArgs.at(i);
+            if (isScanning) {
+                if (customArg.toLower() != "-q")
+                    args << customArg;
+            }
+            else {
+                args << customArg;
+            }
+        }
     }
 
     return args;
@@ -131,7 +139,7 @@ void SettingsDialog::on_softfmButton_clicked()
 
 void SettingsDialog::updateCommandPreview()
 {
-    QString text = QString("%1 %2").arg(softfm(), commandArgs(88.8, true).join(' '));
+    QString text = QString("%1 %2").arg(softfm(), commandArgs(88.8, false, true).join(' '));
     ui->commandPreviewTextEdit->setText(text);
 }
 

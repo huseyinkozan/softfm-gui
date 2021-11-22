@@ -13,18 +13,18 @@ TableActionWidget::~TableActionWidget()
     delete ui;
 }
 
-double TableActionWidget::freq() const
+int TableActionWidget::freqAsKhz() const
 {
-    return m_freq;
+    return m_freqAsKhz;
 }
 
-void TableActionWidget::setFreq(double newFreq)
+void TableActionWidget::setFreqAsKhz(int freqAsKhz)
 {
-    m_freq = newFreq;
+    m_freqAsKhz = freqAsKhz;
 }
 
 void TableActionWidget::on_removeButton_clicked()
 {
-    emit remove(m_freq);
+    emit remove(m_freqAsKhz);
 }
 

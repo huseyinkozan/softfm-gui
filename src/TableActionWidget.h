@@ -15,18 +15,18 @@ public:
     explicit TableActionWidget(QWidget *parent = nullptr);
     ~TableActionWidget();
 
-    double freq() const;
-    void setFreq(double newFreq);
+    int freqAsKhz() const;
+    void setFreqAsKhz(int freqAsKhz);
 
 signals:
-    void remove(double freq);
+    void remove(int freqAsKhz);
 
 private slots:
     void on_removeButton_clicked();
 
 private:
     Ui::TableActionWidget *ui;
-    double m_freq = 0.0;
+    int m_freqAsKhz = 0.0;
 };
 
 #endif // TABLEACTIONWIDGET_H
