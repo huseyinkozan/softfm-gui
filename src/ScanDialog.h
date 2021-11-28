@@ -24,6 +24,8 @@ public:
 
     void process(const MainWindow::AdvancedFields & af);
 
+    bool isMuted() const;
+
 public slots:
     void done(int result);
 

@@ -39,6 +39,7 @@ QDataStream &operator>>(QDataStream &in, ChannelRecord &cr)
     if (cr.version == 1) {
         in >> cr.freqAsMhz;
         cr.freqAsKhz = mhz_to_khz(cr.freqAsMhz);
+        cr.version = 2;
     }
     if (cr.version == 2) {
         in >> cr.freqAsKhz;

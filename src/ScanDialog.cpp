@@ -140,6 +140,11 @@ void ScanDialog::process(const MainWindow::AdvancedFields &af)
     progItem->setData(Qt::DisplayRole, QVariant::fromValue((int) percent));
 }
 
+bool ScanDialog::isMuted() const
+{
+    return ui->mutedCheckBox->isChecked();
+}
+
 void ScanDialog::done(int result)
 {
     if (ui->scanButton->isChecked())
@@ -179,6 +184,8 @@ void ScanDialog::showEvent(QShowEvent *event)
         trayItem->setData(Qt::DisplayRole, QVariant::fromValue(cr.showAtTray));
         listItem->setData(Qt::DisplayRole, QVariant::fromValue(true));
     }
+
+    ui->tableWidget->clearSelection();
 
     QDialog::showEvent(event);
 }

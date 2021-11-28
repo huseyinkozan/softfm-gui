@@ -21,7 +21,8 @@ public:
     bool isDarkMode() const;
     QString customArgs() const;
     QString customConf() const;
-    QStringList commandArgs(int freqAsKhz, bool isScanning, bool forPreview = false) const;
+    QStringList commandArgs(int freqAsKhz, bool isScanning, bool isMuted = false,
+                            bool forPreview = false) const;
 
     bool isMono() const;
     void setIsMono(bool mono);

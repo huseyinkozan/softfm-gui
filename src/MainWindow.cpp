@@ -293,7 +293,7 @@ void MainWindow::on_actionPreview_triggered(bool checked)
     bool ok = false;
     const int sec = QInputDialog::getInt(
                 this, tr("Start Preview"), tr("Change Interval as sec"),
-                5, 5, INT32_MAX, 1, &ok);
+               3, 1, INT32_MAX, 1, &ok);
     const int msec = sec * 1000;
     if ( ! ok) {
         ui->actionPreview->setChecked(false);
@@ -368,7 +368,9 @@ void MainWindow::radioOn()
 
     const int freqAsKhz = mhz_to_khz(ui->freqDoubleSpinBox->value());
 
-    const QStringList args = m_settingsDialog->commandArgs(freqAsKhz, m_isScanning);
+    const bool isMuted  = m_scanDialog->isMuted();
+
+    const QStringList args = m_settingsDialog->commandArgs(freqAsKhz, m_isScanning, isMuted);
 
     m_process->setArguments(args);
     m_process->start();
@@ -540,6 +542,7 @@ void MainWindow::on_tableWidget_itemSelectionChanged()
     const int itemFreqAsKhz = freqItem->data(Qt::DisplayRole).toInt(&ok);
     if ( ! ok)
         return;
+
     ui->freqDoubleSpinBox->setValue(khz_to_mhz(itemFreqAsKhz));
 }
 
@@ -605,11 +608,16 @@ void MainWindow::previewTimerTimeout()
         selectedRow = selection->selectedRows().first().row();
     selectedRow++;
     const int nextRow = selectedRow % ui->tableWidget->rowCount();
-    QTableWidgetItem * nextItem = ui->tableWidget->item(nextRow, Column_Freq);
-    if (nextItem) {
-        ui->tableWidget->scrollToItem(nextItem);
-    }
-    ui->tableWidget->selectRow(nextRow);
+    QTableWidgetItem * freqItem = ui->tableWidget->item(nextRow, Column_Freq);
+    if ( ! freqItem)
+        return;
+    bool ok = false;
+    const int freqAsKhz = freqItem->data(Qt::DisplayRole).toInt(&ok);
+    if ( ! ok)
+        return;
+    ui->tableWidget->scrollToItem(freqItem);
+
+    ui->freqDoubleSpinBox->setValue(khz_to_mhz(freqAsKhz));
 
     m_previewChanged = QDateTime::currentDateTimeUtc().toMSecsSinceEpoch();
     previewProgressTimerTimeout();
@@ -862,20 +870,7 @@ void MainWindow::captureEvents(const QString &txt)
 
 ChannelRecordMap MainWindow::getChannelRecordMap() const
 {
-    ChannelRecordMap cm = QSettings().value("MainWindow/channelRecordMap")
-            .value<ChannelRecordMap>();
-
-    // upgrade records, if have any old version
-    const QList<qint32> freqAsKhzList = cm.keys();
-    for (int i = 0; i < freqAsKhzList.count(); ++i) {
-        const qint32 freqAsKhz = freqAsKhzList.at(i);
-        if (cm[freqAsKhz].version == 1) {
-            cm[freqAsKhz].version = 2;
-            // freqAsMhz and freqAsKhz will be filled at stream function
-        }
-    }
-
-    return cm;
+   return QSettings().value("MainWindow/channelRecordMap").value<ChannelRecordMap>();
 }
 
 void MainWindow::setChannelRecordMap(const ChannelRecordMap &crMap)
