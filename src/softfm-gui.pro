@@ -61,7 +61,7 @@ CONFIG += embed_translations
 
 RESOURCES += \
     resources/images/images.qrc \
-    thirdparty/QDarkStyleSheet/qdarkstyle/style.qrc
+    thirdparty/QDarkStyleSheet-3.0.2/qdarkstyle/dark/style.qrc
 
 
 

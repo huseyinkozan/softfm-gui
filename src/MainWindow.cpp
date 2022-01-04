@@ -747,7 +747,7 @@ void MainWindow::applyDarkMode()
     // qDebug() << Q_FUNC_INFO << checked;
 
     if (m_settingsDialog->isDarkMode()) {
-        QFile qdarkstyleFile(":qdarkstyle/style.qss");
+        QFile qdarkstyleFile(":/qdarkstyle/dark/style.qss");
         if ( ! qdarkstyleFile.exists()) {
             qDebug("Unable to set QDarkStyleSheet stylesheet, file not found\n");
         }
