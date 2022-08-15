@@ -5,6 +5,7 @@
 #include <QMap>
 #include <QList>
 #include <QString>
+#include <QDataStream>
 #include "main.h"
 
 #define CHANNELRECORD_VER 2

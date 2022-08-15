@@ -71,7 +71,13 @@ QStringList SettingsDialog::commandArgs(int freqAsKhz, bool isScanning,
 
 
     if ( ! ca.isEmpty()) {
-        const QStringList customArgs = ca.trimmed().split(' ', QString::SkipEmptyParts);
+        const QStringList customArgs = ca.trimmed().split(' ',
+#if (QT_VERSION >= QT_VERSION_CHECK(5,14,0))
+                                                          Qt::SkipEmptyParts
+#else
+                                                          QString::SkipEmptyParts
+#endif
+                                                          );
         for (int i = 0; i < customArgs.count(); ++i) {
             const QString & customArg = customArgs.at(i);
             if (isScanning) {
