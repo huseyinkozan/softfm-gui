@@ -52,5 +52,10 @@ int main(int argc, char *argv[])
 
     a.setActivationWindow(&w);
 
+    a.connect(&a, &QtSingleApplication::messageReceived, &a, [&w](){
+        w.show();
+        w.raise();
+    });
+
     return a.exec();
 }
